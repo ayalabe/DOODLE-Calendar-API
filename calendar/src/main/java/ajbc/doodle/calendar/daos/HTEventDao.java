@@ -6,13 +6,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import ajbc.doodle.calendar.entities.Category;
 import ajbc.doodle.calendar.entities.Event;
-import ajbc.doodle.calendar.entities.EventGuests;
-import ajbc.doodle.calendar.entities.Product;
-import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")
 @Repository("htEventDao")
@@ -26,15 +21,8 @@ public class HTEventDao implements EventDao {
 	@Override
 	public void addEvent(Event event) throws DaoException {
 		template.persist(event);
-		List<Integer> guests = event.getGuests();
-		for (int i = 0; i < guests.size(); i++) {
-			addEventGuests(new EventGuests(event.getEventId(), guests.get(i)));
-		}
 	}
-	private void addEventGuests(EventGuests eventGuests) {
-		template.persist(eventGuests);
-		
-	}
+
 	
 	@Override
 	public void updateEvent(Event event) throws DaoException {

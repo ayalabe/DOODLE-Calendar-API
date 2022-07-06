@@ -6,10 +6,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import ajbc.doodle.calendar.entities.Category;
-import ajbc.doodle.calendar.entities.Product;
 import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")

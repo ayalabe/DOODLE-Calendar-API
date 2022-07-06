@@ -19,19 +19,15 @@ public class EventService {
 	@Autowired
 	@Qualifier("htEventDao")
 	EventDao eventDao;
+	@Autowired
+	@Qualifier("htUserDao")
 	UserDao userDao;
 	
 	public void addEvent(Event event) throws DaoException{
-		User user = userDao.getUser(event.getOwnerId());
-		// Check if user owner is exist in db.
-		if(user == null)
-			throw new DaoException("User no exist in DB");
-		// Check if all guests is exist in db.
-		List<Integer> guests = event.getGuests();
-		for (int i = 0; i < guests.size(); i++) {
-			if(userDao.getUser(guests.get(i)) == null)
-				throw new DaoException("User no exist in DB");
-		}
+//		User user = userDao.getUser(event.getOwnerId());
+//		// Check if user owner is exist in db.
+//		if(user == null)
+//			throw new DaoException("User no exist in DB");
 		eventDao.addEvent(event);
 	}
 	

@@ -1,13 +1,7 @@
 package ajbc.doodle.calendar;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import ajbc.doodle.calendar.entities.Category;
 import ajbc.doodle.calendar.entities.Event;
-import ajbc.doodle.calendar.entities.EventGuests;
-import ajbc.doodle.calendar.entities.Product;
-import ajbc.doodle.calendar.entities.Supplier;
 import ajbc.doodle.calendar.entities.User;
 
 import java.util.Properties;
@@ -33,7 +27,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 public class AppConfig {
 
-	private static final int INIT_SIZE = 10, MAX_SIZE = 100, MAX_WAIT = 500, MAX_IDLE = 50, MIN_IDLE = 2;
 	@Value("${user}")
 	private String user;
 	@Value("${password}")
@@ -66,7 +59,7 @@ public class AppConfig {
 	public LocalSessionFactoryBean sessionFactory(DataSource  dataSource) {
 		LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
 		factory.setDataSource(dataSource);
-		factory.setAnnotatedClasses(User.class);
+		factory.setAnnotatedClasses(User.class, Event.class);
 		
 		Properties props = new Properties();
 		props.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
@@ -76,7 +69,6 @@ public class AppConfig {
 		factory.setHibernateProperties(props);
 		return factory;
 	}
-	
 	
 	
 	@Bean
