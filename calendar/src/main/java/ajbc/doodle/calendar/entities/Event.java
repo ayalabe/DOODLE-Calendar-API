@@ -1,8 +1,10 @@
 package ajbc.doodle.calendar.entities;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,9 +17,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.JoinColumn;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +34,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-
+@AllArgsConstructor
 
 @Entity
 @Table(name = "events")
@@ -36,7 +43,6 @@ public class Event {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer eventId;
-	
 	private Integer ownerId;
 	
 	private String title;
@@ -53,13 +59,15 @@ public class Event {
 	@Enumerated(EnumType.STRING)
 	private RepeatingOptions repeating;
 	
-	@ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.REFRESH})
 	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+	@JsonManagedReference
 	private List<User> guests;
 	
-//	@ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
-//	@JoinTable(name = "Users_Events", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @Join
-//	private Map<K, List<No>> notification;
+//	@OneToMany(fetch = FetchType.EAGER)
+//	@JoinColumn(name="")
+//	private List<Notification> notifications;
+//	private Set<Notification> notifications = new HashSet<Notification>();
 	
 	
 	

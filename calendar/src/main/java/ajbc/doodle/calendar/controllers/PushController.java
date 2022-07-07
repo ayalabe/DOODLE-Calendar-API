@@ -123,7 +123,7 @@ public class PushController {
 		counter++;
 		try {
 			
-			Notification notification = new Notification(counter, LocalDateTime.now(), "Test notification", "Test message",Unit.HOURS,30);
+			Notification notification = new Notification(counter,counter, LocalDateTime.now(), "Test notification", "Test message",Unit.HOURS,30,30,null);
 			sendPushMessageToAllSubscribers(this.subscriptions, new PushMessage("message: " + counter, notification.toString()));
 			System.out.println(notification);
 		} catch (JsonProcessingException e) {

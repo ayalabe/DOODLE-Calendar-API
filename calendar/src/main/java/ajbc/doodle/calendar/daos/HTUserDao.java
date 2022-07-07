@@ -22,6 +22,13 @@ public class HTUserDao implements UserDao {
 	public void addUser(User user) throws DaoException {
 		template.persist(user);
 	}
+	
+	@Override
+	public void addListUsers(List<User> users) throws DaoException {
+		for (int i = 0; i < users.size(); i++) {
+			template.persist(users.get(i));
+		}
+	}
 	@Override
 	public void updateUser(User user) throws DaoException {
 		template.merge(user);
@@ -29,6 +36,13 @@ public class HTUserDao implements UserDao {
 	@Override
 	public User getUser(Integer userId) throws DaoException {
 		User us = template.get(User.class, userId);
+		if (us ==null)
+			throw new DaoException("No Such User in DB");
+		return us;
+	}
+	@Override
+	public User getUserByEmail(String email) throws DaoException {
+		User us = template.get(User.class, email);
 		if (us ==null)
 			throw new DaoException("No Such User in DB");
 		return us;

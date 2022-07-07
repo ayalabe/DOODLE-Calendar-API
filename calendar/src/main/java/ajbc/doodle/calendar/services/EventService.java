@@ -31,11 +31,11 @@ public class EventService {
 		eventDao.addEvent(event);
 	}
 	
-	public void updateUser(Event event) throws DaoException {
+	public void updateEvent(Event event) throws DaoException {
 		eventDao.updateEvent(event);
 	}
 
-	public Event getUser(Integer userId) throws DaoException {
+	public Event getEvent(Integer userId) throws DaoException {
 		return eventDao.getEvent(userId);
 	}
 	

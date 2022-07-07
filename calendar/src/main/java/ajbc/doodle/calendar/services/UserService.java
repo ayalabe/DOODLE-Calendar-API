@@ -22,12 +22,20 @@ public class UserService {
 		userDao.addUser(user);
 	}
 	
+	public void addListUsers(List<User> users) throws DaoException{
+		userDao.addListUsers(users);
+	}
+	
 	public void updateUser(User user) throws DaoException {
 		userDao.updateUser(user);
 	}
 
 	public User getUser(Integer userId) throws DaoException {
 		return userDao.getUser(userId);
+	}
+	
+	public User getUserByEmail(String email) throws DaoException {
+		return userDao.getUserByEmail(email);
 	}
 	
 	public void deleteUser(Integer userId) throws DaoException {
@@ -37,4 +45,6 @@ public class UserService {
 	public List<User> getAllUser() throws DaoException{
 		return userDao.getAllUser();
 	}
+
+	
 }

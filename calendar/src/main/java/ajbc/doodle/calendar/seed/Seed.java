@@ -8,15 +8,20 @@ import org.springframework.stereotype.Component;
 
 import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.Event;
+import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.entities.RepeatingOptions;
+import ajbc.doodle.calendar.entities.Unit;
 import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.services.EventService;
+import ajbc.doodle.calendar.services.NotificationService;
 import ajbc.doodle.calendar.services.UserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Component
@@ -27,6 +32,8 @@ public class Seed {
 	private UserService userService;
 	@Autowired
 	private EventService eventService;
+	@Autowired
+	private NotificationService notificationService;
 	
 
 
@@ -34,11 +41,33 @@ public class Seed {
 	public void seed(ContextRefreshedEvent event) {
 		try {
 //			seedUsersTable();
-			seedEventTable();
+//			seedEventTable();
+			seedNotificationTable();
 		} catch (DaoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+	private void seedNotificationTable() throws DaoException {
+		Notification notification = new Notification();
+		notification.setEventId(1000);
+		notification.setUserId(1000);
+		notification.setEvent(eventService.getEvent(1000));
+		notification.setLocalDateTime(LocalDateTime.of(2022, 10, 31,10,50));
+		notification.setMessage("bbbbb");
+		notification.setQuantity(3);
+		notification.setTitle("mornung");
+		notification.setUnit(Unit.HOURS);
+//		Notification notification = new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
+//				"tizcoret", "runnn", Unit.HOURS, 3, eventService.getEvent(1000));
+		
+//		Notification notification = new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
+//				"tizcoret", "runnn", Unit.HOURS, 3);
+		
+		notificationService.addNotification(notification);
+		
 	}
 
 
@@ -64,28 +93,37 @@ public class Seed {
 		user2.setIsLogin(1);
 		userService.addUser(user2);
 
-		userService.getAllUser().stream().forEach(System.out::println);
+//		userService.getAllUser().stream().forEach(System.out::println);
 
 	}
 
 	
 	private void seedEventTable() throws DaoException {
 
-		Event event = new Event();
-		event.setOwnerId(1000);
-		event.setTitle("exam");
-		event.setIsAllDay(1);
-		event.setStart(LocalDateTime.of(2022, 10, 31,10,50));
-		event.setEnd(LocalDateTime.of(2022, 10, 31,00,50));
-		event.setAddress("Jerusalem");
-		event.setDescription("nice");
-		event.setDiscontinued(0);
-		event.setRepeating(RepeatingOptions.NONE);
-		event.setGuests(Arrays.asList(userService.getUser(1001)));
-		
-		eventService.addEvent(event);
+//		Event event1 = new Event();
+//		event1.setOwnerId(1000);
+//		event1.setTitle("Party");
+//		event1.setIsAllDay(1);
+//		event1.setStart(LocalDateTime.of(2022, 10, 31,10,50));
+//		event1.setEnd(LocalDateTime.of(2022, 10, 31,00,50));
+//		event1.setAddress("Jerusalem");
+//		event1.setDescription("nice");
+//		event1.setDiscontinued(0);
+//		event1.setRepeating(RepeatingOptions.NONE);
+//		event1.setGuests(Arrays.asList(userService.getUser(1001)));
+//		
+//		Set<Notification> notifications = new HashSet<Notification>();
+//		notifications.addAll(Arrays.asList(new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
+//				"tizcoret", "runnn", Unit.HOURS, 3, eventService.getEvent(1000))));
+//		
+//		Event event2 = new Event(1,1001, "Merry", 1,LocalDateTime.of(2022, 10, 31,10,50),LocalDateTime.of(2022, 10, 31,00,50),
+//				"Hifa", "nicee",0,RepeatingOptions.NONE, Arrays.asList(userService.getUser(1001)),
+//				notifications);
+//		
+//		
+//		eventService.addEvent(event2);
 
-		eventService.getAllEvent().stream().forEach(System.out::println);
+
 
 	}
 	

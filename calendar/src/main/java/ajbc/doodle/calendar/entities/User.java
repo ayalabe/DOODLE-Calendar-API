@@ -41,7 +41,8 @@ public class User {
 	private LocalDate joinDate;
 	private Integer discontinued;
 	private Integer isLogin;
-	@ManyToMany(mappedBy="guests",cascade = {CascadeType.MERGE})
+	@JsonIgnore
+	@ManyToMany(mappedBy="guests",cascade = {CascadeType.ALL})
 	List<Event> events;
 	
 	
