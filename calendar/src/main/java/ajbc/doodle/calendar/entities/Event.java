@@ -66,6 +66,7 @@ public class Event {
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name="eventId")
+	@JsonManagedReference
 	private Set<Notification> notifications = new HashSet<Notification>();
 	
 	

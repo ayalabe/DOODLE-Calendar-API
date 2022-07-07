@@ -1,9 +1,11 @@
 package ajbc.doodle.calendar.daos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.User;
 
 
@@ -48,6 +50,12 @@ public interface UserDao {
 			throw new DaoException("Method not implemented");
 		}
 
+		public default List<User> getUsersByTimeRange(LocalDateTime start, LocalDateTime end) throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
 		
+		public default void deleteUserHard(User user) throws DaoException{
+			throw new DaoException("Method not implemented");
+		}
 	
 }

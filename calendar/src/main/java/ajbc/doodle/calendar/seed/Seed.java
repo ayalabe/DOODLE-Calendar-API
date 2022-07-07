@@ -112,15 +112,15 @@ public class Seed {
 
 		Event event1 = new Event();
 		event1.setOwnerId(1000);
-		event1.setTitle("rrrrrrrrrrr");
+		event1.setTitle("srsr");
 		event1.setIsAllDay(1);
-		event1.setStart(LocalDateTime.of(2022, 10, 31,10,50));
-		event1.setEnd(LocalDateTime.of(2022, 10, 31,00,50));
+		event1.setStart(LocalDateTime.of(2020, 10, 1,10,50));
+		event1.setEnd(LocalDateTime.of(2020, 10, 2,12,00));
 		event1.setAddress("Jerusalem");
 		event1.setDescription("nice");
 		event1.setDiscontinued(0);
 		event1.setRepeating(RepeatingOptions.NONE);
-		event1.setGuests(Arrays.asList(userService.getUser(1001),userService.getUser(1002),userService.getUser(1003)));
+		event1.setGuests(Arrays.asList(userService.getUser(1001),userService.getUser(1002)));
 		
 		Set<Notification> notifications = new HashSet<Notification>();
 		notifications.add(notification);

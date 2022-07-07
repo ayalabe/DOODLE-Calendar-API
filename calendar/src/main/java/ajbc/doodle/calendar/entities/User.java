@@ -5,12 +5,14 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -41,8 +43,10 @@ public class User {
 	private LocalDate joinDate;
 	private Integer discontinued;
 	private Integer isLogin;
+	
 	@JsonIgnore
-	@ManyToMany(mappedBy="guests",cascade = {CascadeType.ALL})
+//	@JsonBackReference
+	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE})
 	List<Event> events;
 	
 	

@@ -1,13 +1,18 @@
 package ajbc.doodle.calendar.daos;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
+import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")
@@ -52,10 +57,33 @@ public class HTUserDao implements UserDao {
 	}
 	
 	@Override
+	public List<User> getUsersByTimeRange(LocalDateTime start, LocalDateTime end) throws DaoException {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Event.class);
+		Criterion criterion1 = Restrictions.between("start", start, end);
+		Criterion criterion2 = Restrictions.between("end", start, end);
+		criteria.add(criterion1);
+		criteria.add(criterion2);
+		List<Event> events = (List<Event>)template.findByCriteria(criteria);
+		HashSet<User> setUser = new HashSet<>();
+		
+		for (int i = 0; i < events.size(); i++) {
+			setUser.add(getUser(events.get(i).getOwnerId()));
+			setUser.addAll(events.get(i).getGuests());
+		}
+		List<User> users = new ArrayList<User>(setUser);
+		return users;
+	}
+	
+	@Override
 	public void deleteUser(Integer userId) throws DaoException {
 		User us = getUser(userId);
 		us.setDiscontinued(1);
 		updateUser(us);
+	}
+	
+	@Override
+	public void deleteUserHard(User user) throws DaoException {
+		template.delete(user);
 	}
 
 		@Override

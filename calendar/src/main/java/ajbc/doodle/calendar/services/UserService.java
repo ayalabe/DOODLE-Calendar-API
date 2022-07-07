@@ -1,5 +1,6 @@
 package ajbc.doodle.calendar.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,16 @@ public class UserService {
 		return userDao.getUserByEmail(email);
 	}
 	
+	public List<User> getUsersByTimeRange(LocalDateTime start, LocalDateTime end) throws DaoException {
+		return userDao.getUsersByTimeRange(start, end);
+	}
+	
 	public void deleteUser(Integer userId) throws DaoException {
 		userDao.deleteUser(userId);
+	}
+	
+	public void deleteUserHard(User user) throws DaoException {
+		userDao.deleteUserHard(user);
 	}
 	
 	public List<User> getAllUser() throws DaoException{

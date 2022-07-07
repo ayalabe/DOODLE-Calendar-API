@@ -1,13 +1,17 @@
 package ajbc.doodle.calendar.daos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import ajbc.doodle.calendar.entities.Event;
+import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")
 @Repository("htEventDao")
@@ -35,6 +39,9 @@ public class HTEventDao implements EventDao {
 			throw new DaoException("No Such Event in DB");
 		return ev;
 	}
+
+	
+	
 	@Override
 	public void deleteEvent(Integer eventId) throws DaoException {
 		Event ev = getEvent(eventId);

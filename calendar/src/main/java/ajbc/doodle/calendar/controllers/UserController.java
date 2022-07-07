@@ -1,7 +1,11 @@
 package ajbc.doodle.calendar.controllers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Optional;
@@ -32,16 +36,7 @@ public class UserController {
 	UserService userService;
 	@Autowired
 	EventService eventService;
-	
-	// Get all users
-	//	@RequestMapping(method = RequestMethod.GET)
-	//	public ResponseEntity<List<User>> getAllUsersByEmail() throws DaoException {
-	//		List<User> list = userService.getAllUser();
-	//		if (list == null)
-	//			return ResponseEntity.notFound().build();
-	//
-	//		return ResponseEntity.ok(list);
-	//	}
+
 	// Create users
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> addUser(@RequestBody User user) {
@@ -58,109 +53,97 @@ public class UserController {
 		}
 	}
 
+	//	// Get with param
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
 
-	// Get all users of an event by event id
-//	@RequestMapping(method = RequestMethod.GET)
-//	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
-//
-//		List<User> allUsers = userService.getAllUser();
-//		List<User> newList = new ArrayList<User>();
-//		List<Event> eventsUser;
-//		if (allUsers == null)
-//			return ResponseEntity.notFound().build();
-//		for (int i = 0; i < allUsers.size(); i++) {
-//			eventsUser = allUsers.get(i).getEvents();
-//			for (int j = 0; j < eventsUser.size(); j++) {
-//				// 
-//				if(eventsUser.get(j).getEventId().equals(Integer.parseInt(map.get("eventId")))) {
-//					newList.add(allUsers.get(i));
-//				}
-//			}
-//		}
-////		System.out.println(map.get("eventId"));
-//
-//		return ResponseEntity.ok(newList);
-//
-//	}
+		Set<String> keys = map.keySet();
+		User user = null;
+		// Get all users of an event by event id
+		if(keys.contains("eventId")) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//	// Get all users of an event by event id
-		@RequestMapping(method = RequestMethod.GET)
-		public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
-			Set<String> keys = map.keySet();
-			User user = null;
-			if(keys.contains("eventId")) {
-				
 			Event event = 	eventService.getEvent(Integer.parseInt(map.get("eventId")));
 			if (event == null)
 				return ResponseEntity.notFound().build();
 			List<User> newList = event.getGuests();
 			newList.add(userService.getUser(event.getOwnerId()) );
 			return ResponseEntity.ok(newList);
-			}
-			if(keys.contains("userId")) {
-				user = userService.getUser(Integer.parseInt(map.get("userId")));
-				if (user == null)
-					return ResponseEntity.notFound().build();
-				return ResponseEntity.ok(user);
-			}
-			if (keys.contains("email")) {
-	
-				user = userService.getUserByEmail(map.get("email"));
-				return ResponseEntity.ok(user);
-			}
-			List<User> list = userService.getAllUser();
-			if (list == null)
-				return ResponseEntity.notFound().build();
-	
-			return ResponseEntity.ok(list);
 		}
 
-	// Get user by email
-	//	@RequestMapping(method = RequestMethod.GET)
-	//	public ResponseEntity<?> getUserByEmail(@RequestParam Map<String, String> map) throws DaoException {
-	//		Set<String> keys = map.keySet();
-	//		User user = null;
-	//		if (keys.contains("email")) {
-	//
-	//			user = userService.getUserByEmail(map.get("email"));
-	//			return ResponseEntity.ok(user);
-	//		}
-	//		List<User> list = userService.getAllUser();
-	//		if (list == null)
-	//			return ResponseEntity.notFound().build();
-	//
-	//		return ResponseEntity.ok(list);
-	//	}
-	// Get user by id
-	//	@RequestMapping(method = RequestMethod.GET, path="/{id}")
-	//	public ResponseEntity<?> getProductsById(@PathVariable Integer id) {
-	//		
-	//		Product prod;
-	//		try {
-	//			prod = dao.getProduct(id);
-	//			return ResponseEntity.ok(prod);
-	//		} catch (DaoException e) {
-	//			ErrorMessage errorMessage = new ErrorMessage();
-	//			errorMessage.setData(e.getMessage());
-	//			errorMessage.setMessage("failed to get product with id "+id);
-	//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-	//		}
-	//	}
+		// Get user by id
+		if(keys.contains("userId")) {
+			user = userService.getUser(Integer.parseInt(map.get("userId")));
+			if (user == null)
+				return ResponseEntity.notFound().build();
+			return ResponseEntity.ok(user);
+		}
+
+		// Get user by email
+		if (keys.contains("email")) {
+
+			user = userService.getUserByEmail(map.get("email"));
+			return ResponseEntity.ok(user);
+		}
+
+		// Get all user that have an event between start date and time to end date and time.
+		if (keys.contains("start") && keys.contains("end")) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+			LocalDateTime start = LocalDateTime.parse(map.get("start"), formatter);
+			LocalDateTime end = LocalDateTime.parse(map.get("end"), formatter);
+			List<User> usersList = userService.getUsersByTimeRange(start, end);
+			return ResponseEntity.ok(usersList);
+		}
+		// Get all users
+		List<User> list = userService.getAllUser();
+		if (list == null)
+			return ResponseEntity.notFound().build();
+
+		return ResponseEntity.ok(list);
+	}
 
 
+	@RequestMapping(method = RequestMethod.PUT, path="/{id}")
+	public ResponseEntity<?> updateProduct(@RequestBody User user, @PathVariable Integer id) {
+
+		try {
+			user.setUserId(id);
+			userService.updateUser(user);
+			user = userService.getUser(user.getUserId());
+			return ResponseEntity.status(HttpStatus.OK).body(user);
+		} catch (DaoException e) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			errorMessage.setData(e.getMessage());
+			errorMessage.setMessage("failed to update user in db");
+			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+		}
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
+	public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {
+		Set<String> keys = map.keySet();
+		User user = null;
+		try {
+			if(keys.contains("soft")) {
+				user = userService.getUser(id);
+				userService.deleteUser(id);
+				user = userService.getUser(id);
+				
+			}
+			if(keys.contains("hard")) {
+				userService.deleteUserHard(userService.getUser(id));
+				return ResponseEntity.status(HttpStatus.OK).body(user);
+			}
+
+
+		} catch (DaoException e) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			errorMessage.setData(e.getMessage());
+			errorMessage.setMessage("failed to delete user from db");
+			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(user);
+
+	}
 
 
 	//	@RequestMapping(method = RequestMethod.POST)
