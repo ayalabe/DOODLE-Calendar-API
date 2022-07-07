@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ajbc.doodle.calendar.entities.Category;
 import ajbc.doodle.calendar.entities.Event;
-import ajbc.doodle.calendar.entities.Product;
 
 
 
@@ -39,33 +37,7 @@ public interface EventDao {
 			throw new DaoException("Method not implemented");
 		}
 
-		public default List<Product> getProductsByPriceRange(Double min, Double max) throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
 
-		public default List<Product> getProductsInCategory(Integer categoryId) throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
-
-		public default List<Product> getProductsNotInStock() throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
-
-		public default List<Product> getProductsOnOrder() throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
-
-		public default List<Product> getDiscontinuedProducts() throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
-		
-		public default Category getCategoryByProdactId() throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
-
-		public default long count() throws DaoException {
-			throw new DaoException("Method not implemented");
-		}
 	
 	
 }

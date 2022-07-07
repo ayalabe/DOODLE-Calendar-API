@@ -45,11 +45,6 @@ public class Notification {
 	private Unit unit;
 	private int quantity;
 	
-//	@JsonIgnore
-//	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-//	@JoinColumn(name="eventId")
-//	private Event event;
-	
 	@JsonIgnore
 	@Column(insertable=false, updatable=false)
 	private Integer eventId;

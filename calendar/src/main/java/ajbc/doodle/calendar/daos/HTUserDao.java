@@ -3,6 +3,7 @@ package ajbc.doodle.calendar.daos;
 import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,11 +43,14 @@ public class HTUserDao implements UserDao {
 	}
 	@Override
 	public User getUserByEmail(String email) throws DaoException {
-		User us = template.get(User.class, email);
-		if (us ==null)
+		DetachedCriteria criteria = DetachedCriteria.forClass(User.class);
+		criteria.add(Restrictions.eq("email", email));
+		List<User> users = (List<User>) template.findByCriteria(criteria);
+		if (users.get(0) ==null)
 			throw new DaoException("No Such User in DB");
-		return us;
+		return users.get(0);
 	}
+	
 	@Override
 	public void deleteUser(Integer userId) throws DaoException {
 		User us = getUser(userId);

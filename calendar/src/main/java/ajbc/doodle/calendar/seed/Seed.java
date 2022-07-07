@@ -41,8 +41,8 @@ public class Seed {
 	public void seed(ContextRefreshedEvent event) {
 		try {
 //			seedUsersTable();
-//			seedEventTable();
-			seedNotificationTable();
+			seedEventTable();
+//			seedNotificationTable();
 		} catch (DaoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,7 +66,7 @@ public class Seed {
 //		Notification notification = new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
 //				"tizcoret", "runnn", Unit.HOURS, 3);
 		
-		notificationService.addNotification(notification);
+//		notificationService.addNotification(notification);
 		
 	}
 
@@ -99,20 +99,32 @@ public class Seed {
 
 	
 	private void seedEventTable() throws DaoException {
+		
+		Notification notification = new Notification();
+		notification.setEventId(1001);
+		notification.setUserId(1000);
+		notification.setEvent(eventService.getEvent(1001));
+		notification.setLocalDateTime(LocalDateTime.of(2022, 10, 31,10,50));
+		notification.setMessage("Good Morning");
+		notification.setQuantity(3);
+		notification.setTitle("mornung");
+		notification.setUnit(Unit.HOURS);
 
-//		Event event1 = new Event();
-//		event1.setOwnerId(1000);
-//		event1.setTitle("Party");
-//		event1.setIsAllDay(1);
-//		event1.setStart(LocalDateTime.of(2022, 10, 31,10,50));
-//		event1.setEnd(LocalDateTime.of(2022, 10, 31,00,50));
-//		event1.setAddress("Jerusalem");
-//		event1.setDescription("nice");
-//		event1.setDiscontinued(0);
-//		event1.setRepeating(RepeatingOptions.NONE);
-//		event1.setGuests(Arrays.asList(userService.getUser(1001)));
-//		
-//		Set<Notification> notifications = new HashSet<Notification>();
+		Event event1 = new Event();
+		event1.setOwnerId(1000);
+		event1.setTitle("rrrrrrrrrrr");
+		event1.setIsAllDay(1);
+		event1.setStart(LocalDateTime.of(2022, 10, 31,10,50));
+		event1.setEnd(LocalDateTime.of(2022, 10, 31,00,50));
+		event1.setAddress("Jerusalem");
+		event1.setDescription("nice");
+		event1.setDiscontinued(0);
+		event1.setRepeating(RepeatingOptions.NONE);
+		event1.setGuests(Arrays.asList(userService.getUser(1001),userService.getUser(1002),userService.getUser(1003)));
+		
+		Set<Notification> notifications = new HashSet<Notification>();
+		notifications.add(notification);
+		event1.setNotifications(notifications);
 //		notifications.addAll(Arrays.asList(new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
 //				"tizcoret", "runnn", Unit.HOURS, 3, eventService.getEvent(1000))));
 //		
@@ -121,7 +133,7 @@ public class Seed {
 //				notifications);
 //		
 //		
-//		eventService.addEvent(event2);
+//		eventService.addEvent(event1);
 
 
 

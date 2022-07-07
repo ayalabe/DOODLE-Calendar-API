@@ -64,10 +64,9 @@ public class Event {
 	@JsonManagedReference
 	private List<User> guests;
 	
-//	@OneToMany(fetch = FetchType.EAGER)
-//	@JoinColumn(name="")
-//	private List<Notification> notifications;
-//	private Set<Notification> notifications = new HashSet<Notification>();
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name="eventId")
+	private Set<Notification> notifications = new HashSet<Notification>();
 	
 	
 	
