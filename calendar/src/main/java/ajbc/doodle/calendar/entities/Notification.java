@@ -24,7 +24,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 
@@ -54,6 +53,21 @@ public class Notification {
 	@JoinColumn(name="eventId")
 	private Event event;
 
+	
+	public Notification(Integer userId, String title,String message, Unit unit, Integer quantity, Integer eventId, Event event) {
+		this.userId = userId;
+		this.title = title;
+		this.message = message;
+		this.unit = unit;
+		this.quantity = quantity;
+		this.event = event;
+		this.event = event;
+		if (unit.equals(Unit.HOURS))
+			this.localDateTime = event.getStart().minusHours(quantity);
+		else
+			this.localDateTime = event.getStart().minusMinutes(quantity);
+		
+	}
 }
 
 

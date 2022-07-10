@@ -39,6 +39,7 @@ public class HTUserDao implements UserDao {
 	public void updateUser(User user) throws DaoException {
 		template.merge(user);
 	}
+	
 	@Override
 	public User getUser(Integer userId) throws DaoException {
 		User us = template.get(User.class, userId);
@@ -51,8 +52,8 @@ public class HTUserDao implements UserDao {
 		DetachedCriteria criteria = DetachedCriteria.forClass(User.class);
 		criteria.add(Restrictions.eq("email", email));
 		List<User> users = (List<User>) template.findByCriteria(criteria);
-		if (users.get(0) ==null)
-			throw new DaoException("No Such User in DB");
+		if (users.isEmpty())
+			return null;
 		return users.get(0);
 	}
 	

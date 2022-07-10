@@ -111,8 +111,10 @@ public class Seed {
 		notification.setUnit(Unit.HOURS);
 
 		Event event1 = new Event();
+		Set<User> gests = new HashSet<User>();
+		gests.addAll(Arrays.asList(userService.getUser(1001),userService.getUser(1002)));
 		event1.setOwnerId(1000);
-		event1.setTitle("srsr");
+		event1.setTitle("skkkkkkkkkkkkkkkkkkkkk");
 		event1.setIsAllDay(1);
 		event1.setStart(LocalDateTime.of(2020, 10, 1,10,50));
 		event1.setEnd(LocalDateTime.of(2020, 10, 2,12,00));
@@ -120,7 +122,7 @@ public class Seed {
 		event1.setDescription("nice");
 		event1.setDiscontinued(0);
 		event1.setRepeating(RepeatingOptions.NONE);
-		event1.setGuests(Arrays.asList(userService.getUser(1001),userService.getUser(1002)));
+		event1.setGuests(gests);
 		
 		Set<Notification> notifications = new HashSet<Notification>();
 		notifications.add(notification);

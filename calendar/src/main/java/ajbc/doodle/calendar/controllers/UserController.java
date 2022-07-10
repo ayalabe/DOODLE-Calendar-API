@@ -53,7 +53,7 @@ public class UserController {
 		}
 	}
 
-	//	// Get with param
+	// Get with param
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
 
@@ -65,7 +65,7 @@ public class UserController {
 			Event event = 	eventService.getEvent(Integer.parseInt(map.get("eventId")));
 			if (event == null)
 				return ResponseEntity.notFound().build();
-			List<User> newList = event.getGuests();
+			Set<User> newList = event.getGuests();
 			newList.add(userService.getUser(event.getOwnerId()) );
 			return ResponseEntity.ok(newList);
 		}

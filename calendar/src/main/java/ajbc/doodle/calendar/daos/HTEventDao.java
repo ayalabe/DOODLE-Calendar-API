@@ -1,6 +1,7 @@
 package ajbc.doodle.calendar.daos;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 import org.hibernate.criterion.Criterion;
@@ -11,7 +12,6 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import ajbc.doodle.calendar.entities.Event;
-import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")
 @Repository("htEventDao")
@@ -40,7 +40,17 @@ public class HTEventDao implements EventDao {
 		return ev;
 	}
 
-	
+	@Override
+	public List<Event> getEventByUserAndDate(Integer userId, LocalDateTime date) throws DaoException {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Event.class);
+//		Criterion criterion1 = Restrictions.gt("end", date);
+		Criterion criterion2 = Restrictions.eq("ownerId", userId);
+//		criteria.add(criterion1);
+		criteria.add(criterion2);
+		
+		List<Event> events = (List<Event>)template.findByCriteria(criteria);
+		return events;
+	}
 	
 	@Override
 	public void deleteEvent(Integer eventId) throws DaoException {

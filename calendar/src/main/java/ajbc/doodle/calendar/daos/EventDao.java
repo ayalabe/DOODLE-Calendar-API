@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ajbc.doodle.calendar.entities.Event;
+import ajbc.doodle.calendar.entities.User;
 
 
 
@@ -39,6 +40,9 @@ public interface EventDao {
 		}
 
 		public default List<Event> getEventssByTimeRange(LocalDateTime start, LocalDateTime end) throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
+		public default List<Event> getEventByUserAndDate(Integer userId, LocalDateTime date) throws DaoException {
 			throw new DaoException("Method not implemented");
 		}
 }

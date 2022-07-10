@@ -1,20 +1,21 @@
 package ajbc.doodle.calendar.entities;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,10 +45,12 @@ public class User {
 	private Integer discontinued;
 	private Integer isLogin;
 	
-	@JsonIgnore
-//	@JsonBackReference
-	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE})
-	List<Event> events;
+//	@JsonIgnore
+	@JsonBackReference
+//	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE})
+	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE}) 
+	@Fetch(FetchMode.JOIN)
+	Set<Event> events = new HashSet<Event>();
 	
 	
 
