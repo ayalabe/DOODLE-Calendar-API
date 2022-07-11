@@ -17,12 +17,12 @@ public class HTNotificationDao implements NotificationDao {
 
 	@Autowired
 	private HibernateTemplate template;
-
+	private NotificationManager manager = new NotificationManager();
 
 	//CRUD operations
 	@Override
 	public void addNotification(Notification notification) throws DaoException {
-		NotificationManager.addQueue(notification);
+		manager.addQueue(notification);
 		template.persist(notification);
 	}
 

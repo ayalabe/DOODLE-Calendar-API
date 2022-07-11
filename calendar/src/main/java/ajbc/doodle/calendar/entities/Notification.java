@@ -25,7 +25,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"eventId", "event"})
 
 
 @Entity

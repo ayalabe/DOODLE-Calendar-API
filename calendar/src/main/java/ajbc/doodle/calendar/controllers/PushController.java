@@ -123,6 +123,8 @@ public class PushController {
 				
 				this.subscriptions.put(subscription.getEndpoint(), subscription);
 				System.out.println("Subscription added with email "+email);
+				
+//				testNotification(NotificationManager.notificationsQueue.peek());
 			}
 		} catch (DaoException e) {
 			// TODO Auto-generated catch block
@@ -149,25 +151,23 @@ public class PushController {
 	}
 	
 	
-	@Scheduled(fixedDelay = 3_000)
-	public void testNotification() throws DaoException {
+	public void testNotification(Notification notifi) throws DaoException {
 		if (this.subscriptions.isEmpty()) {
 			return;
 		}
 		counter++;
 		try {
 
-			Notification notification = NotificationManager.notificationsQueue.peek();
+			Notification notification = notifi;
 			User user = userService.getUser(notification.getUserId());
-			sendPushMessageToSubscribers(user.getKeys(), user.getAuth(), user.getEndPointLog(), new PushMessage("message: " + counter, notification.getMessage()));
+			sendPushMessageToSubscribers(user.getKeys(), user.getAuth(), user.getEndPointLog(), new PushMessage("message: " + counter, notification.toString()));
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private void sendPushMessageToSubscribers(String keys, String auth, String endPoint, Object message)
+	public void sendPushMessageToSubscribers(String keys, String auth, String endPoint, Object message)
 			throws JsonProcessingException {
 		
 		Set<String> failedSubscriptions = new HashSet<>();
@@ -252,5 +252,6 @@ public class PushController {
 
 		return false;
 	}
+
 
 }

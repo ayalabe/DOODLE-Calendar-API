@@ -114,12 +114,12 @@ public class Seed {
 
 		Event event1 = new Event();
 		Set<User> gests = new HashSet<User>();
-		gests.addAll(Arrays.asList(userService.getUser(1001)));
-		event1.setOwnerId(1000);
-		event1.setTitle("skkkkkkkkkkkkkkkkkkkkk");
+		gests.addAll(Arrays.asList(userService.getUser(1000)));
+		event1.setOwnerId(1001);
+		event1.setTitle("Test Send Notifi");
 		event1.setIsAllDay(1);
-		event1.setStart(LocalDateTime.of(2020, 10, 1,10,50));
-		event1.setEnd(LocalDateTime.of(2020, 10, 2,12,00));
+		event1.setStart(LocalDateTime.of(2022, 7, 11,18,27));
+		event1.setEnd(LocalDateTime.of(2022, 7, 11,18,27));
 		event1.setAddress("Jerusalem");
 		event1.setDescription("hhhhhhhhhhhhsss");
 		event1.setDiscontinued(0);
