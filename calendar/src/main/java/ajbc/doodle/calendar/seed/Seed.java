@@ -18,7 +18,6 @@ import ajbc.doodle.calendar.services.UserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -66,7 +65,7 @@ public class Seed {
 //		Notification notification = new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
 //				"tizcoret", "runnn", Unit.HOURS, 3);
 		
-//		notificationService.addNotification(notification);
+		notificationService.addNotification(notification);
 		
 	}
 
@@ -76,21 +75,24 @@ public class Seed {
 		User user1 = new User();
 		user1.setFirstName("zelda");
 		user1.setLastName("rrrrr");
-		user1.setEmail("zzzzz@test.com");
+		user1.setEmail("ffff@test.com");
 		user1.setBirthdate(LocalDate.of(1999, 10, 31));
 		user1.setJoinDate(LocalDate.now());
 		user1.setDiscontinued(0);
-		user1.setIsLogin(1);
+		user1.setIsLogin(0);
 		userService.addUser(user1);
 		
 		User user2 = new User();
 		user2.setFirstName("Ayala");
 		user2.setLastName("Maskalchi");
-		user2.setEmail("ayala@test.com");
+		user2.setEmail("lllll@test.com");
 		user2.setBirthdate(LocalDate.of(1999, 10, 31));
 		user2.setJoinDate(LocalDate.now());
 		user2.setDiscontinued(0);
-		user2.setIsLogin(1);
+		user2.setIsLogin(0);
+//		user2.setAuth("nnn");
+//		user2.setEndPointLog("fff");
+//		user2.setKeys("sss");
 		userService.addUser(user2);
 
 //		userService.getAllUser().stream().forEach(System.out::println);
@@ -100,33 +102,33 @@ public class Seed {
 	
 	private void seedEventTable() throws DaoException {
 		
-		Notification notification = new Notification();
-		notification.setEventId(1001);
-		notification.setUserId(1000);
-		notification.setEvent(eventService.getEvent(1001));
-		notification.setLocalDateTime(LocalDateTime.of(2022, 10, 31,10,50));
-		notification.setMessage("Good Morning");
-		notification.setQuantity(3);
-		notification.setTitle("mornung");
-		notification.setUnit(Unit.HOURS);
+//		Notification notification = new Notification();
+//		notification.setEventId(1001);
+//		notification.setUserId(1000);
+//		notification.setEvent(eventService.getEvent(1001));
+//		notification.setLocalDateTime(LocalDateTime.of(2022, 10, 31,10,50));
+//		notification.setMessage("Good Morning");
+//		notification.setQuantity(3);
+//		notification.setTitle("mornung");
+//		notification.setUnit(Unit.HOURS);
 
 		Event event1 = new Event();
 		Set<User> gests = new HashSet<User>();
-		gests.addAll(Arrays.asList(userService.getUser(1001),userService.getUser(1002)));
+		gests.addAll(Arrays.asList(userService.getUser(1001)));
 		event1.setOwnerId(1000);
 		event1.setTitle("skkkkkkkkkkkkkkkkkkkkk");
 		event1.setIsAllDay(1);
 		event1.setStart(LocalDateTime.of(2020, 10, 1,10,50));
 		event1.setEnd(LocalDateTime.of(2020, 10, 2,12,00));
 		event1.setAddress("Jerusalem");
-		event1.setDescription("nice");
+		event1.setDescription("hhhhhhhhhhhhsss");
 		event1.setDiscontinued(0);
 		event1.setRepeating(RepeatingOptions.NONE);
 		event1.setGuests(gests);
-		
-		Set<Notification> notifications = new HashSet<Notification>();
-		notifications.add(notification);
-		event1.setNotifications(notifications);
+//		
+//		Set<Notification> notifications = new HashSet<Notification>();
+//		notifications.add(notification);
+//		event1.setNotifications(notifications);
 //		notifications.addAll(Arrays.asList(new Notification(1, 1000, LocalDateTime.of(2022, 10, 31,10,50), 
 //				"tizcoret", "runnn", Unit.HOURS, 3, eventService.getEvent(1000))));
 //		
@@ -135,7 +137,7 @@ public class Seed {
 //				notifications);
 //		
 //		
-//		eventService.addEvent(event1);
+		eventService.addEvent(event1);
 
 
 

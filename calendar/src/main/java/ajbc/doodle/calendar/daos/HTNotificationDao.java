@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.Notification;
-import ajbc.doodle.calendar.queue.ThreadQueue;
+import ajbc.doodle.calendar.manager.NotificationManager;
 
 @SuppressWarnings("unchecked")
 @Repository("htNotificationDao")
@@ -22,7 +22,7 @@ public class HTNotificationDao implements NotificationDao {
 	//CRUD operations
 	@Override
 	public void addNotification(Notification notification) throws DaoException {
-		ThreadQueue.priorityQueue.add(notification);
+		NotificationManager.addQueue(notification);
 		template.persist(notification);
 	}
 

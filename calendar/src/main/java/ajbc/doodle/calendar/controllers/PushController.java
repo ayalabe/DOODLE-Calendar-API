@@ -14,10 +14,11 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +50,7 @@ import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.entities.webpush.PushMessage;
 import ajbc.doodle.calendar.entities.webpush.Subscription;
 import ajbc.doodle.calendar.entities.webpush.SubscriptionEndpoint;
+import ajbc.doodle.calendar.manager.NotificationManager;
 import ajbc.doodle.calendar.services.CryptoService;
 import ajbc.doodle.calendar.services.UserService;
 
@@ -75,7 +77,8 @@ public class PushController {
 	private final ObjectMapper objectMapper;
 
 	private int counter;
-
+	
+	
 	@Autowired
 	UserService userService;
 
@@ -108,16 +111,15 @@ public class PushController {
 			if(user == null)
 				System.out.println("User dont exist in DB");
 			else {
-				user.setIsLogin(0);
-				userService.updateUser(user);
-				//to send a notification you must know for each user:
-				//1. public key
-				System.out.println("public key: "+subscription.getKeys().getP256dh());
-				//2. auth
-				System.out.println("auth: "+ subscription.getKeys().getAuth());
+				user.loggIn(true);
+			
+				user.setKeys(subscription.getKeys().getP256dh());
+			
+				user.setAuth(subscription.getKeys().getAuth());
 				
-				//3 end point
-				System.out.println("end point: "+subscription.getEndpoint());
+				user.setEndPointLog(subscription.getEndpoint());
+				
+				userService.updateUser(user);
 				
 				this.subscriptions.put(subscription.getEndpoint(), subscription);
 				System.out.println("Subscription added with email "+email);
@@ -130,8 +132,13 @@ public class PushController {
 
 
 	@PostMapping("/unsubscribe/{email}")
-	public void unsubscribe(@RequestBody SubscriptionEndpoint subscription, @PathVariable(required = false) String email) {
+	public void unsubscribe(@RequestBody SubscriptionEndpoint subscription, @PathVariable(required = false) String email) throws DaoException {
 		this.subscriptions.remove(subscription.getEndpoint());
+		User user = userService.getUserByEmail(email);
+		if(user == null)
+			System.out.println("User dont exist in DB");
+		else 
+			user.loggIn(false);
 		System.out.println("Subscription with email "+email+" got removed!");
 	}
 
@@ -140,20 +147,19 @@ public class PushController {
 	public boolean isSubscribed(@RequestBody SubscriptionEndpoint subscription) {
 		return this.subscriptions.containsKey(subscription.getEndpoint());
 	}
-
-
-
+	
+	
 	@Scheduled(fixedDelay = 3_000)
-	public void testNotification() {
+	public void testNotification() throws DaoException {
 		if (this.subscriptions.isEmpty()) {
 			return;
 		}
 		counter++;
 		try {
 
-			Notification notification = new Notification(counter, "Test notification", "Test message",Unit.HOURS,30,30,null);
-			sendPushMessageToAllSubscribers(this.subscriptions, new PushMessage("message: " + counter, notification.toString()));
-			System.out.println(notification);
+			Notification notification = NotificationManager.notificationsQueue.peek();
+			User user = userService.getUser(notification.getUserId());
+			sendPushMessageToSubscribers(user.getKeys(), user.getAuth(), user.getEndPointLog(), new PushMessage("message: " + counter, notification.getMessage()));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,49 +167,36 @@ public class PushController {
 
 	}
 
-
-	private void sendPushMessageToAllSubscribersWithoutPayload() {
-		Set<String> failedSubscriptions = new HashSet<>();
-		for (Subscription subscription : this.subscriptions.values()) {
-			boolean remove = sendPushMessage(subscription, null);
-			if (remove) {
-				failedSubscriptions.add(subscription.getEndpoint());
-			}
-		}
-		failedSubscriptions.forEach(this.subscriptions::remove);
-	}
-
-	private void sendPushMessageToAllSubscribers(Map<String, Subscription> subs, Object message)
+	private void sendPushMessageToSubscribers(String keys, String auth, String endPoint, Object message)
 			throws JsonProcessingException {
-
+		
 		Set<String> failedSubscriptions = new HashSet<>();
 
-		for (Subscription subscription : subs.values()) {
+		
 			try {
 				byte[] result = this.cryptoService.encrypt(this.objectMapper.writeValueAsString(message),
-						subscription.getKeys().getP256dh(), subscription.getKeys().getAuth(), 0);
-				boolean remove = sendPushMessage(subscription, result);
+						keys, auth, 0);
+				boolean remove = sendPushMessage(endPoint, result);
 				if (remove) {
-					failedSubscriptions.add(subscription.getEndpoint());
+					failedSubscriptions.add(endPoint);
 				}
 			} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidAlgorithmParameterException
 					| IllegalStateException | InvalidKeySpecException | NoSuchPaddingException
 					| IllegalBlockSizeException | BadPaddingException e) {
 				Application.logger.error("send encrypted message", e);
 			}
-		}
 
-		failedSubscriptions.forEach(subs::remove);
+//		failedSubscriptions.forEach(subs::remove);
 	}
 
 	/**
 	 * @return true if the subscription is no longer valid and can be removed, false
 	 *         if everything is okay
 	 */
-	private boolean sendPushMessage(Subscription subscription, byte[] body) {
+	private boolean sendPushMessage(String endPoint, byte[] body) {
 		String origin = null;
 		try {
-			URL url = new URL(subscription.getEndpoint());
+			URL url = new URL(endPoint);
 			origin = url.getProtocol() + "://" + url.getHost();
 		} catch (MalformedURLException e) {
 			Application.logger.error("create origin", e);
@@ -216,7 +209,7 @@ public class PushController {
 		String token = JWT.create().withAudience(origin).withExpiresAt(expires)
 				.withSubject("mailto:example@example.com").sign(this.jwtAlgorithm);
 
-		URI endpointURI = URI.create(subscription.getEndpoint());
+		URI endpointURI = URI.create(endPoint);
 
 		Builder httpRequestBuilder = HttpRequest.newBuilder();
 		if (body != null) {
@@ -234,11 +227,11 @@ public class PushController {
 
 			switch (response.statusCode()) {
 			case 201:
-				Application.logger.info("Push message successfully sent: {}", subscription.getEndpoint());
+				Application.logger.info("Push message successfully sent: {}", endPoint);
 				break;
 			case 404:
 			case 410:
-				Application.logger.warn("Subscription not found or gone: {}", subscription.getEndpoint());
+				Application.logger.warn("Subscription not found or gone: {}", endPoint);
 				// remove subscription from our collection of subscriptions
 				return true;
 			case 429:

@@ -2,6 +2,8 @@ package ajbc.doodle.calendar.entities;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -18,8 +20,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.JoinColumn;
 
@@ -47,10 +50,8 @@ public class Event {
 	private String title;
 	private Integer isAllDay;
 	@Column(name = "startDateTime")
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS][.SS][.S]")
 	private LocalDateTime start;
 	@Column(name = "endDateTime")
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS][.SS][.S]")
 	private LocalDateTime end;
 	@Column(name = "eAddress")
 	private String address;
@@ -60,9 +61,12 @@ public class Event {
 	@Enumerated(EnumType.STRING)
 	private RepeatingOptions repeating;
 	
+//	@ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.REFRESH})
+//	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+//	@JsonManagedReference
+//	@JsonProperty(access = Access.AUTO)
 	@ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.REFRESH})
 	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
-//	@JsonManagedReference
 	private Set<User> guests = new HashSet<User>();
 	
 	@OneToMany(fetch = FetchType.EAGER)

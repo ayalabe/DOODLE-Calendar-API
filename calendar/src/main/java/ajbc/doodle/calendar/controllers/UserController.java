@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +54,21 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/{userId}")
+	public ResponseEntity<?> getUser(@PathVariable Integer userId) {
+		User user;
+		System.out.println(userId);
+		try {
+			user = userService.getUser(userId);
+		} catch (DaoException e) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(user);
+			
+	}
+	
+	
+	
 	// Get with param
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
