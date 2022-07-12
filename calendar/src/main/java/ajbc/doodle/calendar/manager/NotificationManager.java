@@ -12,20 +12,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
 
-import ajbc.doodle.calendar.controllers.PushController;
+import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.Notification;
+import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.UserService;
 
-
+@Service
 public class NotificationManager {
 	
 	@Autowired
 	UserService userService;
 	@Autowired
-	PushController pushController;
+	MessagePushService messagePushService;
+	
 	private static final int NUM_THREAD_M = 1;
 	private long nextTime = 5;
 	
@@ -43,14 +46,15 @@ public class NotificationManager {
 			return 1;
 		}});
 	
-	public void addQueue(Notification notification) {
+	public void addQueue(Notification notification) throws DaoException {
 		if(notificationsQueue.isEmpty()) {
 			nextTime = Duration.between(LocalDateTime.now(), notification.getLocalDateTime()).getSeconds();
 			System.out.println("nextTime: "+nextTime);
 			executorManager.schedule(managerQueue, nextTime, TimeUnit.SECONDS);
 		}
 		notificationsQueue.add(notification);
-		System.out.println("hiii");
+		
+
 	}
 	
 	
@@ -73,7 +77,7 @@ public class NotificationManager {
 		}
 		
 		for (int i = 0; i < list.size(); i++) {
-			executorSlaves.execute(new ThreadSlave(list.get(i), userService, pushController));
+			executorSlaves.execute(new ThreadSlave(list.get(i), userService, messagePushService));
 		}
 
 	};

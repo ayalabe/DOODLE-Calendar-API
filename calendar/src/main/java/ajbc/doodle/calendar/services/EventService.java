@@ -38,14 +38,29 @@ public class EventService {
 		// Check if user owner is exist in db.
 		if(user == null)
 			throw new DaoException("User no exist in DB");
+		
 		Set<Notification> notifications = event.getNotifications();
+		
+		Set<User> gests = new HashSet<User>();
+		gests.add(user);
+		
+		gests.addAll(event.getGuests());
+		event.setGuests(gests);
+		
+		event.setNotifications(new HashSet<Notification>());
+		eventDao.addEvent(event);
+
+		
+		Notification curNotification;
+		
 		if(!notifications.isEmpty()) {
 			List<Notification> listNot = new ArrayList<Notification>(notifications);
 			for (int i = 0; i < listNot.size(); i++) {
-				notificationDao.addNotification(listNot.get(i));
+				curNotification = listNot.get(i);
+				notificationDao.addNotification(new Notification(event.getOwnerId(), curNotification.getTitle(), curNotification.getMessage() , curNotification.getUnit(), curNotification.getQuantity(), event.getEventId(), event));
 			}
 		}	
-		eventDao.addEvent(event);
+		
 		Notification defNoti = createDefaultNotification(event);
 		notificationDao.addNotification(defNoti);
 	}
@@ -72,6 +87,14 @@ public class EventService {
 	
 	public List<Event> getAllEvent() throws DaoException{
 		return eventDao.getAllEvent();
+	}
+
+	public List<Event> getEventsByTimeRange(Integer userId, LocalDateTime start, LocalDateTime end) throws DaoException {
+		return eventDao.getEventsByTimeRange(userId, start, end);
+	}
+
+	public List<Event> getAllEventsByTimeRange(LocalDateTime start, LocalDateTime end) throws DaoException {
+		return eventDao.getAllEventsByTimeRange(start, end);
 	}
 
 	

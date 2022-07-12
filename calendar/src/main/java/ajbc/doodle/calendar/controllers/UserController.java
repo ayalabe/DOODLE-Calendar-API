@@ -2,13 +2,9 @@ package ajbc.doodle.calendar.controllers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +21,29 @@ import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.ErrorMessage;
 import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.User;
+import ajbc.doodle.calendar.entities.webpush.Subscription;
 import ajbc.doodle.calendar.services.EventService;
+import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.UserService;
+import ajbc.doodle.calendar.entities.webpush.PushMessage;
+import ajbc.doodle.calendar.entities.webpush.SubscriptionEndpoint;
+
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 
 @RequestMapping("/users")
@@ -37,6 +54,8 @@ public class UserController {
 	UserService userService;
 	@Autowired
 	EventService eventService;
+	@Autowired
+	MessagePushService messagePushService;
 
 	// Create users
 	@RequestMapping(method = RequestMethod.POST)
@@ -53,6 +72,48 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
+	
+	// login
+		@RequestMapping(method = RequestMethod.POST, path = "/login/{email}")
+		public ResponseEntity<?> login(@RequestBody Subscription subscription, @PathVariable(required = false) String email)
+				throws DaoException, InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException,
+				InvalidKeySpecException, InvalidAlgorithmParameterException, NoSuchPaddingException,
+				IllegalBlockSizeException, BadPaddingException {
+			try {
+				User user = userService.getUserByEmail(email);
+				userService.login(user, subscription);
+				messagePushService.sendPushMessage(user,
+						messagePushService.encryptMessage(user, new PushMessage("message: ", "hello")));
+
+				return ResponseEntity.ok().body("Logged in");
+			} catch (DaoException e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+			}
+
+		}
+
+			@RequestMapping(method = RequestMethod.POST, path = "/logout/{email}")
+			public ResponseEntity<?> logout(@PathVariable(required = false) String email) throws DaoException {
+				try {
+					User user = userService.getUserByEmail(email);
+					userService.logout(user);
+					return ResponseEntity.ok().body("Logged out");
+				} catch (DaoException e) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+				}
+			}
+			
+			@PostMapping("/isSubscribed")
+			public boolean isSubscribed(@RequestBody SubscriptionEndpoint subscription) throws DaoException {
+				List<User> users = userService.getAllUser();
+				for(User user : users) {
+					if(user.getEndPointLog() != null) {
+						if(user.getEndPointLog().equals(subscription.getEndpoint()))
+							return true;
+					}
+				}
+				return false;
+			}
 
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> getUser(@PathVariable Integer userId) {
@@ -77,21 +138,12 @@ public class UserController {
 		User user = null;
 		// Get all users of an event by event id
 		if(keys.contains("eventId")) {
-
 			Event event = 	eventService.getEvent(Integer.parseInt(map.get("eventId")));
 			if (event == null)
 				return ResponseEntity.notFound().build();
 			Set<User> newList = event.getGuests();
-			newList.add(userService.getUser(event.getOwnerId()) );
+			newList.add(userService.getUser(event.getOwnerId()));
 			return ResponseEntity.ok(newList);
-		}
-
-		// Get user by id
-		if(keys.contains("userId")) {
-			user = userService.getUser(Integer.parseInt(map.get("userId")));
-			if (user == null)
-				return ResponseEntity.notFound().build();
-			return ResponseEntity.ok(user);
 		}
 
 		// Get user by email

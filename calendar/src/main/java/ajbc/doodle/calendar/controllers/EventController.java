@@ -63,16 +63,6 @@ public class EventController {
 		}
 	}
 
-	// Get all events
-//	@RequestMapping(method = RequestMethod.GET)
-//	public ResponseEntity<List<Event>> getAllEvents() throws DaoException {
-//		List<Event> list;
-//		list = service.getAllEvent();
-//		if (list == null)
-//			return ResponseEntity.notFound().build();
-//
-//		return ResponseEntity.ok(list);
-//	}
 
 	// Get with param
 	@RequestMapping(method = RequestMethod.GET)
@@ -80,34 +70,56 @@ public class EventController {
 
 		Set<String> keys = map.keySet();
 		User user = null;
-		// Get all users of an event by event id
+
+		// Get upcoming events of a user ( only future events )
+		if (keys.contains("userId") && keys.contains("upcoming")) {
+			LocalDateTime nowadate = LocalDateTime.now();
+			List<Event> eventList = service.getEventByUserAndDate(Integer.parseInt(map.get("userId")), nowadate);
+			return ResponseEntity.ok(eventList);
+		}
+
+
+		// Get events of a user the next coming num of minutes and hours
+		if (keys.contains("userId") && keys.contains("num") && keys.contains("hours")) {
+			LocalDateTime nowadate = LocalDateTime.now();
+			LocalDateTime dateAfter = nowadate.plusHours(Long.parseLong(map.get("hours")));
+			dateAfter = dateAfter.plusMinutes(Long.parseLong(map.get("num")));
+			System.out.println(dateAfter);
+			List<Event> eventList = service.getEventsByTimeRange(Integer.parseInt(map.get("userId")),nowadate, dateAfter);
+			return ResponseEntity.ok(eventList);
+		}
+
+		// Get events of a user in a range between start date and time to end date and time. 
+		if (keys.contains("userId") && keys.contains("start") && keys.contains("end")) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+			LocalDateTime start = LocalDateTime.parse(map.get("start"), formatter);
+			LocalDateTime end = LocalDateTime.parse(map.get("end"), formatter);
+			List<Event> usersList = service.getEventsByTimeRange(Integer.parseInt(map.get("userId")),start, end);
+			return ResponseEntity.ok(usersList);
+		}
+
+		// Get all events in a range between start date and time to end date and time.
+		if (keys.contains("start") && keys.contains("end")) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+			LocalDateTime start = LocalDateTime.parse(map.get("start"), formatter);
+			LocalDateTime end = LocalDateTime.parse(map.get("end"), formatter);
+			List<Event> usersList = service.getAllEventsByTimeRange(start, end);
+			return ResponseEntity.ok(usersList);
+		}
+
+
+
+		// Get all events of a user
 		if(keys.contains("userId")) {
-			
+
 			user = userService.getUser(Integer.parseInt(map.get("userId")));
-			
+
 			if (user == null)
 				return ResponseEntity.notFound().build();
 			Set<Event> newList = user.getEvents();
 			return ResponseEntity.ok(newList);
 		}
 
-		// Get all user that have an event between start date and time to end date and time.
-		if (keys.contains("userId") && keys.contains("upcoming")) {
-			LocalDateTime nowadate = LocalDateTime.now();
-			List<Event> eventList = service.getEventByUserAndDate(Integer.parseInt(map.get("userId")), nowadate);
-			return ResponseEntity.ok(eventList);
-		}
-		
-		// Get events of a user in a range between start date and time to end date and time.
-		// TODO 
-		if (keys.contains("start") && keys.contains("end")) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
-			LocalDateTime start = LocalDateTime.parse(map.get("start"), formatter);
-			LocalDateTime end = LocalDateTime.parse(map.get("end"), formatter);
-			List<User> usersList = userService.getUsersByTimeRange(start, end);
-			return ResponseEntity.ok(usersList);
-		}
-		
 		// Get all events
 		List<Event> list;
 		list = service.getAllEvent();
@@ -118,6 +130,21 @@ public class EventController {
 	}
 
 
+	@RequestMapping(method = RequestMethod.PUT, path="/{id}")
+	public ResponseEntity<?> updateProduct(@RequestBody Event event, @PathVariable Integer id) {
+
+		try {
+			event.setEventId(id);
+			service.updateEvent(event);
+			event = service.getEvent(event.getEventId());
+			return ResponseEntity.status(HttpStatus.OK).body(event);
+		} catch (DaoException e) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			errorMessage.setData(e.getMessage());
+			errorMessage.setMessage("failed to update Event in db");
+			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+		}
+	}
 
 
 }

@@ -22,6 +22,8 @@ import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,8 +61,9 @@ public class User {
 	
 	@JsonIgnore
 //	@JsonBackReference
-	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH}) 
-//	@Fetch(FetchMode.JOIN)
+//	@JsonProperty(access = Access.AUTO)
+	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}) 
+	@Fetch(FetchMode.JOIN)
 	Set<Event> events = new HashSet<Event>();
 	
 	public void loggIn(boolean bool) {

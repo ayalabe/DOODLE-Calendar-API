@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.daos.UserDao;
 import ajbc.doodle.calendar.entities.User;
+import ajbc.doodle.calendar.entities.webpush.Subscription;
 
 
 @Service
@@ -55,7 +56,24 @@ public class UserService {
 		return userDao.getAllUser();
 	}
 
-	
+	//log in 	
+			public void login(User user, Subscription subscription) throws DaoException {
+				user.loggIn(true);
+				
+				user.setEndPointLog(subscription.getEndpoint());
+				user.setKeys(subscription.getKeys().getP256dh());
+				user.setAuth(subscription.getKeys().getAuth());
+				
+				userDao.updateUser(user);
+			}
+			
+			public void logout(User user) throws DaoException {
+				user.loggIn(false);
+				
+				user.setEndPointLog(null);
+				
+				userDao.updateUser(user);
+			}
 
 	
 }

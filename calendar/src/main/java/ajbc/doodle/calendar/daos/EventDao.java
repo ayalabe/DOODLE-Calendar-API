@@ -45,4 +45,10 @@ public interface EventDao {
 		public default List<Event> getEventByUserAndDate(Integer userId, LocalDateTime date) throws DaoException {
 			throw new DaoException("Method not implemented");
 		}
+		public default List<Event> getEventsByTimeRange(Integer userId, LocalDateTime start, LocalDateTime end)throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
+		public default List<Event> getAllEventsByTimeRange(LocalDateTime start, LocalDateTime end)throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
 }

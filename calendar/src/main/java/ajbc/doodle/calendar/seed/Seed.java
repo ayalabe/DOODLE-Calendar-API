@@ -39,8 +39,8 @@ public class Seed {
 	@EventListener
 	public void seed(ContextRefreshedEvent event) {
 		try {
-//			seedUsersTable();
-			seedEventTable();
+			seedUsersTable();
+//			seedEventTable();
 //			seedNotificationTable();
 		} catch (DaoException e) {
 			// TODO Auto-generated catch block
@@ -71,29 +71,47 @@ public class Seed {
 
 
 	private void seedUsersTable() throws DaoException {
+		
+		Event event1 = new Event();
+		Set<User> gests = new HashSet<User>();
+		gests.addAll(Arrays.asList(userService.getUser(1000)));
+		event1.setOwnerId(1001);
+		event1.setTitle("Test Send Notifi");
+		event1.setIsAllDay(1);
+		event1.setStart(LocalDateTime.of(2022, 7, 12,9,16));
+		event1.setEnd(LocalDateTime.of(2022, 7, 12,9,16));
+		event1.setAddress("Jerusalem");
+		event1.setDescription("hhhhhhhhhhhhsss");
+		event1.setDiscontinued(0);
+		event1.setRepeating(RepeatingOptions.NONE);
+		event1.setGuests(gests);
+		
+		Set<Event> eventSet = new HashSet<Event>();
+		eventSet.add(event1);
 
 		User user1 = new User();
-		user1.setFirstName("zelda");
+		user1.setFirstName("yael");
 		user1.setLastName("rrrrr");
-		user1.setEmail("ffff@test.com");
+		user1.setEmail("yael@test.com");
 		user1.setBirthdate(LocalDate.of(1999, 10, 31));
 		user1.setJoinDate(LocalDate.now());
 		user1.setDiscontinued(0);
 		user1.setIsLogin(0);
-		userService.addUser(user1);
+		user1.setEvents(eventSet);
+//		userService.addUser(user1);
 		
-		User user2 = new User();
-		user2.setFirstName("Ayala");
-		user2.setLastName("Maskalchi");
-		user2.setEmail("lllll@test.com");
-		user2.setBirthdate(LocalDate.of(1999, 10, 31));
-		user2.setJoinDate(LocalDate.now());
-		user2.setDiscontinued(0);
-		user2.setIsLogin(0);
-//		user2.setAuth("nnn");
-//		user2.setEndPointLog("fff");
-//		user2.setKeys("sss");
-		userService.addUser(user2);
+//		User user2 = new User();
+//		user2.setFirstName("Ayala");
+//		user2.setLastName("Maskalchi");
+//		user2.setEmail("lllll@test.com");
+//		user2.setBirthdate(LocalDate.of(1999, 10, 31));
+//		user2.setJoinDate(LocalDate.now());
+//		user2.setDiscontinued(0);
+//		user2.setIsLogin(0);
+////		user2.setAuth("nnn");
+////		user2.setEndPointLog("fff");
+////		user2.setKeys("sss");
+//		userService.addUser(user2);
 
 //		userService.getAllUser().stream().forEach(System.out::println);
 
@@ -118,8 +136,8 @@ public class Seed {
 		event1.setOwnerId(1001);
 		event1.setTitle("Test Send Notifi");
 		event1.setIsAllDay(1);
-		event1.setStart(LocalDateTime.of(2022, 7, 11,18,27));
-		event1.setEnd(LocalDateTime.of(2022, 7, 11,18,27));
+		event1.setStart(LocalDateTime.of(2022, 7, 12,9,16));
+		event1.setEnd(LocalDateTime.of(2022, 7, 12,9,16));
 		event1.setAddress("Jerusalem");
 		event1.setDescription("hhhhhhhhhhhhsss");
 		event1.setDiscontinued(0);
@@ -137,7 +155,7 @@ public class Seed {
 //				notifications);
 //		
 //		
-		eventService.addEvent(event1);
+//		eventService.addEvent(event1);
 
 
 
