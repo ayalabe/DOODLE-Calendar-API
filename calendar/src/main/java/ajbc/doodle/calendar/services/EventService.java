@@ -57,7 +57,7 @@ public class EventService {
 			List<Notification> listNot = new ArrayList<Notification>(notifications);
 			for (int i = 0; i < listNot.size(); i++) {
 				curNotification = listNot.get(i);
-				notificationDao.addNotification(new Notification(event.getOwnerId(), curNotification.getTitle(), curNotification.getMessage() , curNotification.getUnit(), curNotification.getQuantity(), event.getEventId(), event));
+				notificationDao.addNotification(new Notification(event.getOwnerId(), curNotification.getTitle(), curNotification.getMessage() , curNotification.getUnit(), curNotification.getQuantity(), event));
 			}
 		}	
 		
@@ -66,7 +66,7 @@ public class EventService {
 	}
 	
 	private Notification createDefaultNotification(Event event) {
-		return new Notification(event.getOwnerId(), event.getTitle(), "Defaulte Notification", Unit.HOURS, 0, event.getEventId(), event);
+		return new Notification(event.getOwnerId(), event.getTitle(), "Defaulte Notification", Unit.HOURS, 0, event);
 	}
 
 	public void updateEvent(Event event) throws DaoException {

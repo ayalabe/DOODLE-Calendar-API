@@ -62,7 +62,7 @@ public class User {
 	@JsonIgnore
 //	@JsonBackReference
 //	@JsonProperty(access = Access.AUTO)
-	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}) 
+	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.REMOVE}) 
 	@Fetch(FetchMode.JOIN)
 	Set<Event> events = new HashSet<Event>();
 	

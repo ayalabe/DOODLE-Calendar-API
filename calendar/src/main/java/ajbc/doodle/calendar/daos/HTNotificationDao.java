@@ -23,10 +23,8 @@ public class HTNotificationDao implements NotificationDao {
 	//CRUD operations
 	@Override
 	public void addNotification(Notification notification) throws DaoException {
-		System.out.println("befor");
-		manager.addQueue(notification);
-		System.out.println("after");
 		template.persist(notification);
+		manager.addQueue(notification);
 	}
 
 	

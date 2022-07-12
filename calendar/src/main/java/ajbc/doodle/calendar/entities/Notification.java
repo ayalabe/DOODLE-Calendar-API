@@ -44,7 +44,7 @@ public class Notification {
 	private Unit unit;
 	private int quantity;
 	
-	@JsonIgnore
+//	@JsonIgnore
 	@Column(insertable=false, updatable=false)
 	private Integer eventId;
 	
@@ -54,14 +54,14 @@ public class Notification {
 	private Event event;
 
 	
-	public Notification(Integer userId, String title,String message, Unit unit, Integer quantity, Integer eventId, Event event) {
+	public Notification(Integer userId, String title,String message, Unit unit, Integer quantity, Event event) {
 		this.userId = userId;
 		this.title = title;
 		this.message = message;
 		this.unit = unit;
 		this.quantity = quantity;
 		this.event = event;
-		this.event = event;
+		this.eventId = event.getEventId();
 		if (unit.equals(Unit.HOURS))
 			this.localDateTime = event.getStart().minusHours(quantity);
 		else

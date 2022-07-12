@@ -65,7 +65,7 @@ public class Event {
 //	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
 //	@JsonManagedReference
 //	@JsonProperty(access = Access.AUTO)
-	@ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.REFRESH})
+	@ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.REFRESH, CascadeType.REMOVE})
 	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
 	private Set<User> guests = new HashSet<User>();
 	

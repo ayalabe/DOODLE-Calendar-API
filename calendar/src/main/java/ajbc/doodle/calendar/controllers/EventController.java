@@ -129,7 +129,7 @@ public class EventController {
 		return ResponseEntity.ok(list);
 	}
 
-
+	// Update Event
 	@RequestMapping(method = RequestMethod.PUT, path="/{id}")
 	public ResponseEntity<?> updateProduct(@RequestBody Event event, @PathVariable Integer id) {
 
@@ -146,5 +146,32 @@ public class EventController {
 		}
 	}
 
+	// Soft Delete Event
+	@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
+	public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {
+		Set<String> keys = map.keySet();
+		Event event = null;
+		try {
+			if(keys.contains("soft")) {
+				event = service.getEvent(id);
+				service.deleteEvent(id);
+				event = service.getEvent(id);
+				
+			}
+			if(keys.contains("hard")) {
+				service.deleteEvent(id);
+				return ResponseEntity.status(HttpStatus.OK).body(event);
+			}
+
+
+		} catch (DaoException e) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			errorMessage.setData(e.getMessage());
+			errorMessage.setMessage("failed to delete Event from db");
+			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(event);
+
+	}
 
 }
