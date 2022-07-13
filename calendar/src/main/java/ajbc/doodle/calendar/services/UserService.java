@@ -69,9 +69,6 @@ public class UserService {
 			
 			public void logout(User user) throws DaoException {
 				user.loggIn(false);
-				
-				user.setEndPointLog(null);
-				
 				userDao.updateUser(user);
 			}
 

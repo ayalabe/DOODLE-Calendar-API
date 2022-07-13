@@ -24,7 +24,15 @@ public class HTNotificationDao implements NotificationDao {
 	@Override
 	public void addNotification(Notification notification) throws DaoException {
 		template.persist(notification);
-		manager.addQueue(notification);
+		try {
+			manager.addQueue(notification);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	
