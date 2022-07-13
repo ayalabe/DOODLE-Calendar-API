@@ -38,6 +38,7 @@ public interface NotificationDao {
 			throw new DaoException("Method not implemented");
 		}
 
-	
-	
+		public default List<Notification> getAllNotificationNotSend() throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
 }

@@ -1,13 +1,15 @@
 package ajbc.doodle.calendar.daos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
-import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.manager.NotificationManager;
 
@@ -24,15 +26,7 @@ public class HTNotificationDao implements NotificationDao {
 	@Override
 	public void addNotification(Notification notification) throws DaoException {
 		template.persist(notification);
-		try {
-			manager.addQueue(notification);
-		} catch (DaoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		manager.addQueue(notification);
 	}
 
 	
@@ -61,6 +55,17 @@ public class HTNotificationDao implements NotificationDao {
 			if(notifList==null)
 				throw new DaoException("No Notification found in DB");
 			return notifList;
+		}
+		
+		@Override
+		public List<Notification> getAllNotificationNotSend() throws DaoException {
+			DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
+			Criterion criterion1 = Restrictions.eq("isSend", 0);
+			criteria.add(criterion1);
+			
+			List<Notification> notifications = (List<Notification>)template.findByCriteria(criteria);
+			
+			return notifications;
 		}
 
 }

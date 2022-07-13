@@ -43,6 +43,9 @@ public class Notification {
 	@Enumerated(EnumType.STRING)
 	private Unit unit;
 	private int quantity;
+	private int discontinued;
+	@JsonIgnore
+	private int isSend;
 	
 //	@JsonIgnore
 	@Column(insertable=false, updatable=false)
@@ -67,6 +70,14 @@ public class Notification {
 		else
 			this.localDateTime = event.getStart().minusMinutes(quantity);
 		
+	}
+	
+	public void isSend(boolean bool) {
+		if(bool)
+			setIsSend(1);
+		
+		else
+			setIsSend(0);
 	}
 }
 

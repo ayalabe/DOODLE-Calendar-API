@@ -1,7 +1,7 @@
 package ajbc.doodle.calendar.manager;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,9 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.hibernate.internal.build.AllowSysOut;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 
@@ -22,19 +27,39 @@ import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.UserService;
 
-@Service
+@Component
 public class NotificationManager {
 
 	@Autowired
 	UserService userService;
+//	@Autowired
+//	NotificationService notificationService;
 	@Autowired
 	MessagePushService messagePushService;
+	@Autowired
+	private HibernateTemplate template;
 
-	private static final int NUM_THREAD_M = 1;
-	private long nextTime = 5, timeOther;
+	@EventListener
+	public void start(ContextRefreshedEvent event) {
+		try {
+			fetchNotificationFromDB();
+			if(!notificationsQueue.isEmpty()) {
+				createThread(notificationsQueue.peek().getLocalDateTime());
+			}
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(notificationsQueue);
+	}
 
-	ScheduledExecutorService executorManager = Executors.newScheduledThreadPool(NUM_THREAD_M);
-	public static Queue<Notification> notificationsQueue = new PriorityQueue<Notification>(new Comparator<Notification>() {
+	private final int NUM_THREAD_M = 1;
+	private LocalDateTime dateTime = null;
+	private ScheduledExecutorService executorManager = Executors.newScheduledThreadPool(NUM_THREAD_M);
+	public Queue<Notification> notificationsQueue = new PriorityQueue<Notification>(new Comparator<Notification>() {
+
+
 		@Override
 		public int compare(Notification n1, Notification n2) {
 
@@ -47,49 +72,62 @@ public class NotificationManager {
 			return -1;
 		}});
 
-	public void addQueue(Notification notification) throws DaoException, InterruptedException {
-		nextTime = Duration.between(LocalDateTime.now(), notification.getLocalDateTime()).getSeconds();
 
-		if(notificationsQueue.isEmpty()) {
-			System.out.println("nextTime: "+nextTime);
-			notificationsQueue.add(notification);
-			executorManager.schedule(managerQueue, nextTime, TimeUnit.SECONDS);
+	private long timeToSleep(LocalDateTime dateTime) {
+		long secondsToSleep = LocalDateTime.now().until(dateTime, ChronoUnit.SECONDS);
+		return secondsToSleep < 0 ? 0 : secondsToSleep;
+	}
+	
+	public void addQueue(Notification notification) {
+		notificationsQueue.add(notification);
+		System.out.println("add notifi");
+		if (dateTime == null || notification.getLocalDateTime().isBefore(dateTime)) {
+			System.out.println(notification.getLocalDateTime());
+			createThread(notification.getLocalDateTime());
 		}
-
-		else 
-			if(notification.getLocalDateTime().isBefore(notificationsQueue.peek().getLocalDateTime())) {
-				executorManager.shutdown();
-				executorManager.awaitTermination(2, TimeUnit.SECONDS);
-				notificationsQueue.add(notification);
-				ScheduledExecutorService executorManager = Executors.newScheduledThreadPool(NUM_THREAD_M);
-				executorManager.schedule(managerQueue, nextTime, TimeUnit.SECONDS);
-
-			}
-
-
-
 	}
 
+
+	private void createThread(LocalDateTime time) {
+
+		this.dateTime = time;
+
+		long secondsToSleep = timeToSleep(time);
+
+		if (executorManager != null) {
+			executorManager.shutdownNow();
+		}
+
+		executorManager = Executors.newScheduledThreadPool(NUM_THREAD_M);
+		executorManager.schedule(managerQueue, secondsToSleep, TimeUnit.SECONDS);
+	}
+
+
+	private void fetchNotificationFromDB() throws DaoException {
+		List<Notification> notifications = getAllNotificationNotSend();
+		notificationsQueue.addAll(notifications);
+	}
+	
+	public List<Notification> getAllNotificationNotSend() throws DaoException {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
+		Criterion criterion1 = Restrictions.eq("isSend", 0);
+		criteria.add(criterion1);
+		
+		List<Notification> notifications = (List<Notification>)template.findByCriteria(criteria);
+		
+		return notifications;
+	}
 
 	public Runnable managerQueue = () -> {
 		List<Notification> list = new ArrayList<Notification>();
 		ExecutorService executorSlaves = Executors.newCachedThreadPool();
-		LocalDateTime dateTime = null;
-		boolean firstTime = true;
 		while(!notificationsQueue.isEmpty()) {
-			if(firstTime) { 
-				list.add(notificationsQueue.poll());
-				dateTime = list.get(0).getLocalDateTime();
-				System.out.println("dateTime: "+dateTime);
-				firstTime = false;
-			}
 
+			if(notificationsQueue.peek().getLocalDateTime().equals(dateTime) || notificationsQueue.peek().getLocalDateTime().isBefore(dateTime)) { 
+				list.add(notificationsQueue.poll());
+			}
 			else
-				if(notificationsQueue.peek().getLocalDateTime().equals(dateTime)) {
-					list.add(notificationsQueue.poll());
-				}
-				else
-					break;
+				break;
 		}
 
 		System.out.println("list: "+list);
@@ -97,8 +135,15 @@ public class NotificationManager {
 		for (int i = 0; i < list.size(); i++) {
 			executorSlaves.execute(new ThreadSlave(list.get(i), userService, messagePushService));
 		}
+		
+		if(!notificationsQueue.isEmpty())
+			createThread(notificationsQueue.peek().getLocalDateTime());
+		else
+			dateTime = null;
 
 	};
+
+
 
 
 

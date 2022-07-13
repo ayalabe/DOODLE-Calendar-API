@@ -49,6 +49,7 @@ public class ThreadSlave implements Runnable {
 			
 			messagePushService.sendPushMessage(user,
 					messagePushService.encryptMessage(user, new PushMessage("message: ", notification.toString())));
+			notification.isSend(true);
 			
 			
 //			messagePushService.sendPushMessageToSubscribers(user.getKeys(), user.getAuth(), user.getEndPointLog(), new PushMessage("message: ", notification.toString()));

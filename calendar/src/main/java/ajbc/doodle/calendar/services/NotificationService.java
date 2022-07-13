@@ -52,6 +52,10 @@ public class NotificationService {
 	public List<Notification> getAllNotification() throws DaoException{
 		return notificationDao.getAllNotification();
 	}
+	
+	public List<Notification> getAllNotificationNotSend() throws DaoException {
+		return notificationDao.getAllNotificationNotSend();
+	}
 
 	// check if the user is in the events
 	private boolean isUserInEvent(Event event, Integer userId) {
