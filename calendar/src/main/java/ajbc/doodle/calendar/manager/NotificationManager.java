@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.services.MessagePushService;
+import ajbc.doodle.calendar.services.NotificationService;
 import ajbc.doodle.calendar.services.UserService;
 
 @Component
@@ -51,7 +52,6 @@ public class NotificationManager {
 			e.printStackTrace();
 		}
 		
-		System.out.println(notificationsQueue);
 	}
 
 	private final int NUM_THREAD_M = 1;

@@ -11,6 +11,7 @@ import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.daos.UserDao;
 import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.entities.webpush.Subscription;
+import lombok.Synchronized;
 
 
 @Service
@@ -31,8 +32,9 @@ public class UserService {
 	public void updateUser(User user) throws DaoException {
 		userDao.updateUser(user);
 	}
-
-	public User getUser(Integer userId) throws DaoException {
+	
+	
+	public synchronized User getUser(Integer userId) throws DaoException {
 		return userDao.getUser(userId);
 	}
 	

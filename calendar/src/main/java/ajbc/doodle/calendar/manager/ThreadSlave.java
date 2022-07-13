@@ -41,7 +41,6 @@ public class ThreadSlave implements Runnable {
 	@Override
 	public void run() {
 		try {
-
 			User user = userService.getUser(notification.getUserId());
 			if(user.getIsLogin() == 0)
 				return;

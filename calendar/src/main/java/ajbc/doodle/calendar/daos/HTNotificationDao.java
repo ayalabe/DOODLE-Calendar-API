@@ -33,6 +33,7 @@ public class HTNotificationDao implements NotificationDao {
 	@Override
 	public void updateNotification(Notification notification) throws DaoException {
 		template.merge(notification);
+		manager.addQueue(notification);
 	}
 	@Override
 	public Notification getNotification(Integer notificationId) throws DaoException {
@@ -41,12 +42,18 @@ public class HTNotificationDao implements NotificationDao {
 			throw new DaoException("No Such Notification in DB");
 		return ev;
 	}
-//	@Override
-//	public void deleteNotification(Integer notificationId) throws DaoException {
-//		Event ev = getEvent(eventId);
-//		ev.setDiscontinued(1);
-//		updateEvent(ev);
-//	}
+	@Override
+	public void deleteSoftNotification(Integer notificationId) throws DaoException {
+		Notification notification = getNotification(notificationId);
+		notification.setDiscontinued(1);
+		updateNotification(notification);
+	}
+	
+	@Override
+	public void deleteNotification(Integer notificationId) throws DaoException {
+		Notification notification = getNotification(notificationId);
+		template.delete(notification);
+	}
 
 		@Override
 		public List<Notification> getAllNotification() throws DaoException {

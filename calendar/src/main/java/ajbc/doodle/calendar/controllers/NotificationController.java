@@ -1,5 +1,6 @@
 package ajbc.doodle.calendar.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +21,6 @@ import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.ErrorMessage;
 import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.Notification;
-import ajbc.doodle.calendar.manager.NotificationManager;
 import ajbc.doodle.calendar.services.EventService;
 import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.NotificationService;
@@ -36,17 +37,38 @@ public class NotificationController {
 	private MessagePushService messagePushService;
 
 	// Create Notification
+//	@RequestMapping(method = RequestMethod.POST)
+//	public ResponseEntity<?> addNotification(@RequestBody Notification notification) {
+//
+//		try {
+//			notificationServcie.addNotification(notification);
+//			notification = notificationServcie.getNotification(notification.getNotificationId());
+//			return ResponseEntity.status(HttpStatus.CREATED).body(notification);
+//		} catch (DaoException e) {
+//			ErrorMessage errorMessage = new ErrorMessage();
+//			errorMessage.setData(e.getMessage());
+//			errorMessage.setMessage("failed to add Notification to db");
+//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+//		}
+//	}
+	// Create Notification from list
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> addNotification(@RequestBody Notification notification) {
-
+	public ResponseEntity<?> addNotification(@RequestBody List<Notification> notifications) {
 		try {
-			notificationServcie.addNotification(notification);
-			notification = notificationServcie.getNotification(notification.getNotificationId());
-			return ResponseEntity.status(HttpStatus.CREATED).body(notification);
+			List<Notification> addedNotifications = new ArrayList<Notification>();
+
+			for (int i = 0; i < notifications.size(); i++) {
+				notificationServcie.addNotification(notifications.get(i));
+
+				Notification notification = notificationServcie.getNotification(notifications.get(i).getNotificationId());
+				addedNotifications.add(notification);
+			}
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(addedNotifications);
 		} catch (DaoException e) {
 			ErrorMessage errorMessage = new ErrorMessage();
 			errorMessage.setData(e.getMessage());
-			errorMessage.setMessage("failed to add Notification to db");
+			errorMessage.setMessage("failed to add notification to db");
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
@@ -115,6 +137,36 @@ public class NotificationController {
 				errorMessage.setMessage("failed to update Notification in db");
 				return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 			}
+		}
+		
+		// Delete Notification
+		@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
+		public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {
+			Set<String> keys = map.keySet();
+			Notification notification = null;
+			try {
+				notification = notificationServcie.getNotification(id);
+				if(keys.contains("soft")) {
+					
+					notificationServcie.deleteSoftNotification(id);
+					notification = notificationServcie.getNotification(id);
+					return ResponseEntity.status(HttpStatus.OK).body(notification);
+					
+				}
+				if(keys.contains("hard")) {
+					notificationServcie.deleteNotification(id);
+					return ResponseEntity.status(HttpStatus.OK).body(notification);
+				}
+
+
+			} catch (DaoException e) {
+				ErrorMessage errorMessage = new ErrorMessage();
+				errorMessage.setData(e.getMessage());
+				errorMessage.setMessage("failed to delete notification from db");
+				return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(notification);
+
 		}
 
 
