@@ -8,13 +8,15 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.manager.NotificationManager;
 
 @SuppressWarnings("unchecked")
-@Repository("htNotificationDao")
+//@Repository("htNotificationDao")
+@Component(value = "htNotificationDao")
 public class HTNotificationDao implements NotificationDao {
 
 	@Autowired
@@ -33,7 +35,6 @@ public class HTNotificationDao implements NotificationDao {
 	@Override
 	public void updateNotification(Notification notification) throws DaoException {
 		template.merge(notification);
-		manager.addQueue(notification);
 	}
 	@Override
 	public Notification getNotification(Integer notificationId) throws DaoException {
@@ -68,6 +69,17 @@ public class HTNotificationDao implements NotificationDao {
 		public List<Notification> getAllNotificationNotSend() throws DaoException {
 			DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
 			Criterion criterion1 = Restrictions.eq("isSend", 0);
+			criteria.add(criterion1);
+			
+			List<Notification> notifications = (List<Notification>)template.findByCriteria(criteria);
+			
+			return notifications;
+		}
+		
+		@Override
+		public List<Notification> getAllNotificationNotByUserId(Integer userId) throws DaoException {
+			DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
+			Criterion criterion1 = Restrictions.eq("userId", userId);
 			criteria.add(criterion1);
 			
 			List<Notification> notifications = (List<Notification>)template.findByCriteria(criteria);

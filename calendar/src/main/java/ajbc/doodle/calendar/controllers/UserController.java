@@ -191,13 +191,12 @@ public class UserController {
 		User user = null;
 		try {
 			if(keys.contains("soft")) {
-				user = userService.getUser(id);
 				userService.deleteUser(id);
 				user = userService.getUser(id);
 				
 			}
 			if(keys.contains("hard")) {
-				userService.deleteUserHard(userService.getUser(id));
+				userService.deleteUserHard(id);
 				return ResponseEntity.status(HttpStatus.OK).body(user);
 			}
 

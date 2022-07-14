@@ -1,14 +1,20 @@
 package ajbc.doodle.calendar.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import ajbc.doodle.calendar.daos.DaoException;
+import ajbc.doodle.calendar.daos.EventDao;
+import ajbc.doodle.calendar.daos.NotificationDao;
 import ajbc.doodle.calendar.daos.UserDao;
+import ajbc.doodle.calendar.entities.Event;
+import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.entities.webpush.Subscription;
 import lombok.Synchronized;
@@ -20,6 +26,15 @@ public class UserService {
 	@Autowired
 	@Qualifier("htUserDao")
 	UserDao userDao;
+	@Autowired
+	@Qualifier("htEventDao")
+	 EventDao eventDao;
+	@Autowired
+	@Qualifier("htNotificationDao")
+	 NotificationDao notificationDao;
+	@Autowired
+	
+	 EventService eventService;
 	
 	public void addUser(User user) throws DaoException{
 		userDao.addUser(user);
@@ -47,11 +62,30 @@ public class UserService {
 	}
 	
 	public void deleteUser(Integer userId) throws DaoException {
-		userDao.deleteUser(userId);
+		User user = getUser(userId);
+		user.isDiscontinued(true);
+		user.loggIn(false);
+		userDao.deleteUser(user);
 	}
 	
-	public void deleteUserHard(User user) throws DaoException {
-		userDao.deleteUserHard(user);
+	public void deleteUserHard(Integer userId) throws DaoException {
+		
+		List<Event> listEvents = eventDao.getEventsByOwnerId(userId);
+		for (int i = 0; i < listEvents.size(); i++) {
+			eventService.deleteEvent(listEvents.get(i).getEventId());
+		}
+		User user = getUser(userId);
+		
+		user.getEvents().forEach(event -> event.getGuests().remove(user));
+		
+		userDao.updateUser(user);
+		
+		List<Notification> notifications = notificationDao.getAllNotificationNotByUserId(userId);
+		for (int i = 0; i < notifications.size(); i++) {
+			notificationDao.deleteNotification(notifications.get(i).getNotificationId()); 
+		}
+		
+		userDao.deleteUserHard(userDao.getUser(userId));
 	}
 	
 	public List<User> getAllUser() throws DaoException{

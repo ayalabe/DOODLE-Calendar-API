@@ -27,6 +27,12 @@ public interface EventDao {
 	public default Event getEvent(Integer eventId) throws DaoException {
 		throw new DaoException("Method not implemented");
 	}
+	
+	@Transactional(readOnly = false)
+	public default void deleteSoftEvent(Integer eventId) throws DaoException {
+		throw new DaoException("Method not implemented");
+	}
+	
 	@Transactional(readOnly = false)
 	public default void deleteEvent(Integer eventId) throws DaoException {
 		throw new DaoException("Method not implemented");
@@ -49,6 +55,10 @@ public interface EventDao {
 			throw new DaoException("Method not implemented");
 		}
 		public default List<Event> getAllEventsByTimeRange(LocalDateTime start, LocalDateTime end)throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
+		
+		public default List<Event> getEventsByOwnerId(Integer userId) throws DaoException {
 			throw new DaoException("Method not implemented");
 		}
 }

@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import ajbc.doodle.calendar.entities.Event;
+import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.entities.User;
 
 @SuppressWarnings("unchecked")
@@ -83,6 +84,18 @@ public class HTEventDao implements EventDao {
 		return chechIfUserInEvent(events, userId);
 	}
 	
+	
+	@Override
+	public List<Event> getEventsByOwnerId(Integer userId) throws DaoException {
+	
+		DetachedCriteria criteria = DetachedCriteria.forClass(Event.class);
+		Criterion criterion1 = Restrictions.eq("ownerId", userId);
+		criteria.add(criterion1);
+		List<Event> events = (List<Event>)template.findByCriteria(criteria);
+		
+		return events;
+	}
+	
 	private List<Event> chechIfUserInEvent(List<Event> events, Integer userId){
 		
 		Set<Event> eventsSet = new HashSet<Event>();
@@ -99,12 +112,17 @@ public class HTEventDao implements EventDao {
 		return new ArrayList<Event>(eventsSet);
 	}
 	
+	@Override
+	public void deleteSoftEvent(Integer eventId) throws DaoException {
+		Event ev = getEvent(eventId);
+		ev.setDiscontinued(1);
+		updateEvent(ev);
+	}
 
 	@Override
 	public void deleteEvent(Integer eventId) throws DaoException {
 		Event ev = getEvent(eventId);
-		ev.setDiscontinued(1);
-		updateEvent(ev);
+		template.delete(ev);
 	}
 
 		@Override

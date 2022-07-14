@@ -27,18 +27,20 @@ import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.NotificationService;
 import ajbc.doodle.calendar.services.UserService;
-
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Component
 public class NotificationManager {
 
 	@Autowired
 	UserService userService;
-//	@Autowired
-//	NotificationService notificationService;
+	@Autowired
+	NotificationService notificationService;
 	@Autowired
 	MessagePushService messagePushService;
-	@Autowired
-	private HibernateTemplate template;
+
 
 	@EventListener
 	public void start(ContextRefreshedEvent event) {
@@ -73,7 +75,7 @@ public class NotificationManager {
 		}});
 
 
-	private long timeToSleep(LocalDateTime dateTime) {
+	long timeToSleep(LocalDateTime dateTime) {
 		long secondsToSleep = LocalDateTime.now().until(dateTime, ChronoUnit.SECONDS);
 		return secondsToSleep < 0 ? 0 : secondsToSleep;
 	}
@@ -104,19 +106,14 @@ public class NotificationManager {
 
 
 	private void fetchNotificationFromDB() throws DaoException {
-		List<Notification> notifications = getAllNotificationNotSend();
+		List<Notification> notifications = notificationService.getAllNotificationNotSend();
 		notificationsQueue.addAll(notifications);
 	}
 	
-	public List<Notification> getAllNotificationNotSend() throws DaoException {
-		DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
-		Criterion criterion1 = Restrictions.eq("isSend", 0);
-		criteria.add(criterion1);
-		
-		List<Notification> notifications = (List<Notification>)template.findByCriteria(criteria);
-		
-		return notifications;
+	public void removeFromQueue(Notification notification) {
+		notificationsQueue.remove(notification);
 	}
+	
 
 	public Runnable managerQueue = () -> {
 		List<Notification> list = new ArrayList<Notification>();
@@ -133,7 +130,7 @@ public class NotificationManager {
 		System.out.println("list: "+list);
 
 		for (int i = 0; i < list.size(); i++) {
-			executorSlaves.execute(new ThreadSlave(list.get(i), userService, messagePushService));
+			executorSlaves.execute(new ThreadSlave(list.get(i), userService, messagePushService,notificationService));
 		}
 		
 		if(!notificationsQueue.isEmpty())

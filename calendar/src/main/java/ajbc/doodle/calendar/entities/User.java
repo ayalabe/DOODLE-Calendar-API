@@ -62,7 +62,8 @@ public class User {
 	@JsonIgnore
 //	@JsonBackReference
 //	@JsonProperty(access = Access.AUTO)
-	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.REMOVE}) 
+//	@ManyToMany(mappedBy="guests", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.REMOVE})
+	@ManyToMany(mappedBy="guests", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE}) 
 	@Fetch(FetchMode.JOIN)
 	Set<Event> events = new HashSet<Event>();
 	
@@ -72,5 +73,13 @@ public class User {
 		
 		else
 			setIsLogin(0);
+	}
+	
+	public void isDiscontinued(boolean bool) {
+		if(bool)
+			setDiscontinued(1);
+		
+		else
+			setDiscontinued(0);
 	}
 }

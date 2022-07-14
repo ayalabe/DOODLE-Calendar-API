@@ -55,8 +55,9 @@ public class NotificationService {
 	}
 	
 	public void deleteSoftNotification(Integer eventId) throws DaoException {
-		notificationDao.deleteNotification(eventId);
+		notificationDao.deleteSoftNotification(eventId);
 	}
+	
 
 	public void deleteNotification(Integer eventId) throws DaoException {
 		notificationDao.deleteNotification(eventId);

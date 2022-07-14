@@ -72,32 +72,32 @@ public class Seed {
 
 	private void seedUsersTable() throws DaoException {
 		
-		Event event1 = new Event();
-		Set<User> gests = new HashSet<User>();
-		gests.addAll(Arrays.asList(userService.getUser(1000)));
-		event1.setOwnerId(1001);
-		event1.setTitle("Test Send Notifi");
-		event1.setIsAllDay(1);
-		event1.setStart(LocalDateTime.of(2022, 7, 12,9,16));
-		event1.setEnd(LocalDateTime.of(2022, 7, 12,9,16));
-		event1.setAddress("Jerusalem");
-		event1.setDescription("hhhhhhhhhhhhsss");
-		event1.setDiscontinued(0);
-		event1.setRepeating(RepeatingOptions.NONE);
-		event1.setGuests(gests);
-		
-		Set<Event> eventSet = new HashSet<Event>();
-		eventSet.add(event1);
-
-		User user1 = new User();
-		user1.setFirstName("yael");
-		user1.setLastName("rrrrr");
-		user1.setEmail("yael@test.com");
-		user1.setBirthdate(LocalDate.of(1999, 10, 31));
-		user1.setJoinDate(LocalDate.now());
-		user1.setDiscontinued(0);
-		user1.setIsLogin(0);
-		user1.setEvents(eventSet);
+//		Event event1 = new Event();
+//		Set<User> gests = new HashSet<User>();
+//		gests.addAll(Arrays.asList(userService.getUser(1000)));
+//		event1.setOwnerId(1001);
+//		event1.setTitle("Test Send Notifi");
+//		event1.setIsAllDay(1);
+//		event1.setStart(LocalDateTime.of(2022, 7, 12,9,16));
+//		event1.setEnd(LocalDateTime.of(2022, 7, 12,9,16));
+//		event1.setAddress("Jerusalem");
+//		event1.setDescription("hhhhhhhhhhhhsss");
+//		event1.setDiscontinued(0);
+//		event1.setRepeating(RepeatingOptions.NONE);
+//		event1.setGuests(gests);
+//		
+//		Set<Event> eventSet = new HashSet<Event>();
+//		eventSet.add(event1);
+//
+//		User user1 = new User();
+//		user1.setFirstName("yael");
+//		user1.setLastName("rrrrr");
+//		user1.setEmail("yael@test.com");
+//		user1.setBirthdate(LocalDate.of(1999, 10, 31));
+//		user1.setJoinDate(LocalDate.now());
+//		user1.setDiscontinued(0);
+//		user1.setIsLogin(0);
+//		user1.setEvents(eventSet);
 //		userService.addUser(user1);
 		
 //		User user2 = new User();

@@ -39,7 +39,7 @@ public interface UserDao {
 	}
 	
 	@Transactional(readOnly = false)
-	public default void deleteUser(Integer userId) throws DaoException {
+	public default void deleteUser(User user) throws DaoException {
 		throw new DaoException("Method not implemented");
 	}
 
@@ -54,6 +54,7 @@ public interface UserDao {
 			throw new DaoException("Method not implemented");
 		}
 		
+		@Transactional(readOnly = false)
 		public default void deleteUserHard(User user) throws DaoException{
 			throw new DaoException("Method not implemented");
 		}

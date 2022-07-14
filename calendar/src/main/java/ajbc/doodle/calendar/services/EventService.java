@@ -81,10 +81,22 @@ public class EventService {
 		return eventDao.getEventByUserAndDate(eventId, date);
 	}
 	
-	public void deleteEvent(Integer eventId) throws DaoException {
-		eventDao.deleteEvent(eventId);
+	public void deleteSoftEvent(Integer eventId) throws DaoException {
+		Event ev = getEvent(eventId);
+		Set<Notification> notifications = ev.getNotifications();
+		List<Notification> list = new ArrayList<Notification>(notifications);
+		for (int i = 0; i < list.size(); i++) {
+			notificationDao.deleteSoftNotification(list.get(i).getNotificationId()); 
+		}
+		eventDao.deleteSoftEvent(eventId);
 	}
 	
+	public void deleteEvent(Integer eventId) throws DaoException {
+		Event event = getEvent(eventId);
+		event.setGuests(null);
+		eventDao.updateEvent(event);
+		eventDao.deleteEvent(eventId);
+	}
 	public List<Event> getAllEvent() throws DaoException{
 		return eventDao.getAllEvent();
 	}

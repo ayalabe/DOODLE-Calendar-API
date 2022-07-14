@@ -20,21 +20,22 @@ import ajbc.doodle.calendar.entities.Notification;
 import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.entities.webpush.PushMessage;
 import ajbc.doodle.calendar.services.MessagePushService;
+import ajbc.doodle.calendar.services.NotificationService;
 import ajbc.doodle.calendar.services.UserService;
 
-//@RestController
 public class ThreadSlave implements Runnable {
 	
 	private UserService userService;
 	private MessagePushService messagePushService;
-	
+	private NotificationService notificationService;
 	private Notification notification;
 	
 	
-	public ThreadSlave(Notification notification, UserService userService, MessagePushService messagePushService ) {
+	public ThreadSlave(Notification notification, UserService userService, MessagePushService messagePushService, NotificationService notificationService ) {
 		this.notification = notification;
 		this.userService = userService;
 		this.messagePushService = messagePushService;
+		this.notificationService = notificationService;
 		System.out.println("in ThreadSlave");
 	}
 
@@ -49,9 +50,8 @@ public class ThreadSlave implements Runnable {
 			messagePushService.sendPushMessage(user,
 					messagePushService.encryptMessage(user, new PushMessage("message: ", notification.toString())));
 			notification.isSend(true);
+			notificationService.updateNotification(notification);
 			
-			
-//			messagePushService.sendPushMessageToSubscribers(user.getKeys(), user.getAuth(), user.getEndPointLog(), new PushMessage("message: ", notification.toString()));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

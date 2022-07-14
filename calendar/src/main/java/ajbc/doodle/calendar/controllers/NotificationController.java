@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import ajbc.doodle.calendar.daos.DaoException;
 import ajbc.doodle.calendar.entities.ErrorMessage;
 import ajbc.doodle.calendar.entities.Event;
 import ajbc.doodle.calendar.entities.Notification;
+import ajbc.doodle.calendar.manager.NotificationManager;
 import ajbc.doodle.calendar.services.EventService;
 import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.NotificationService;
@@ -35,6 +37,8 @@ public class NotificationController {
 	EventService eventService;
 	@Autowired
 	private MessagePushService messagePushService;
+	@Autowired(required = false)
+	private NotificationManager notificationManager;
 
 	// Create Notification
 //	@RequestMapping(method = RequestMethod.POST)
@@ -128,7 +132,9 @@ public class NotificationController {
 
 			try {
 				notification.setNotificationId(id);
+				notificationManager.removeFromQueue(notificationServcie.getNotification(notification.getNotificationId()));
 				notificationServcie.updateNotification(notification);
+				notificationManager.addQueue(notification);
 				notification = notificationServcie.getNotification(notification.getNotificationId());
 				return ResponseEntity.status(HttpStatus.OK).body(notification);
 			} catch (DaoException e) {
@@ -138,6 +144,32 @@ public class NotificationController {
 				return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 			}
 		}
+		
+		@RequestMapping(method = RequestMethod.PUT)
+		public ResponseEntity<?> updateListNotifications(@RequestBody List<Notification> notifications) {
+			Notification not;
+			List<Notification> addedNotifications = new ArrayList<Notification>();
+			try {
+				for (int i = 0; i < notifications.size(); i++) {
+					notificationManager.removeFromQueue(notificationServcie.getNotification(notifications.get(i).getNotificationId()));
+					notificationServcie.updateNotification(notifications.get(i));
+					not= notificationServcie.getNotification(notifications.get(i).getNotificationId());
+					notificationManager.addQueue(notifications.get(i));
+					addedNotifications.add(not);
+				}
+				return ResponseEntity.status(HttpStatus.OK).body(addedNotifications);
+			} catch (DaoException e) {
+				ErrorMessage errorMessage = new ErrorMessage();
+				errorMessage.setData(e.getMessage());
+				errorMessage.setMessage("failed to update user in db");
+				return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+			}
+		}
+		
+		
+		
+		
+		
 		
 		// Delete Notification
 		@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
@@ -168,6 +200,26 @@ public class NotificationController {
 			return ResponseEntity.status(HttpStatus.OK).body(notification);
 
 		}
+		
+		
+//		@DeleteMapping
+//		public ResponseEntity<List<Notification>> DeleteNotification(@RequestBody List<Integer> notificationIds, @RequestParam Map<String, String> map)
+//				throws DaoException {
+//			Set<String> keys = map.keySet();
+//			List<Notification> notsList=new ArrayList<Notification>();
+//
+//			if (keys.contains("soft"))
+//				for (Integer notId : notificationIds) {
+//					notsList.add(notificationServcie.deleteSoftNotification(notId));
+//				}
+//
+//			if (keys.contains("hard"))
+//				for (Integer notId : notificationIds) {
+//					notsList.add(notificationServcie.deleteNotification(notId));
+//				}
+//				
+//			return ResponseEntity.ok(notsList);
+//		}
 
 
 }

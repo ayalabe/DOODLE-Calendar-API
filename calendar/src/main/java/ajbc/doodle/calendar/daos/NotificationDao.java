@@ -36,7 +36,6 @@ public interface NotificationDao {
 		throw new DaoException("Method not implemented");
 	}
 
-	//Queries
 	
 	// QUERIES
 		public default List<Notification> getAllNotification() throws DaoException {
@@ -44,6 +43,10 @@ public interface NotificationDao {
 		}
 
 		public default List<Notification> getAllNotificationNotSend() throws DaoException {
+			throw new DaoException("Method not implemented");
+		}
+		
+		public default List<Notification> getAllNotificationNotByUserId(Integer userId) throws DaoException {
 			throw new DaoException("Method not implemented");
 		}
 }

@@ -69,8 +69,11 @@ public class Event {
 	@JoinTable(name = "EventGuests", joinColumns = @JoinColumn(name = "eventId"), inverseJoinColumns = @JoinColumn(name = "userId"))
 	private Set<User> guests = new HashSet<User>();
 	
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name="eventId")
+	
+	@OneToMany(mappedBy = "event", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+//	@JoinColumn(name="eventId")
+//	@OneToMany(fetch = FetchType.EAGER)
+//	@JoinColumn(name="eventId")
 //	@JsonManagedReference
 	private Set<Notification> notifications = new HashSet<Notification>();
 	

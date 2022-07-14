@@ -1,6 +1,7 @@
 package ajbc.doodle.calendar.controllers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +9,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,17 +35,36 @@ public class EventController {
 	UserService userService;
 
 	// Create Event
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> addEvent(@RequestBody Event event) {
+//	@RequestMapping(method = RequestMethod.POST)
+//	public ResponseEntity<?> addEvent(@RequestBody Event event) {
+//
+//		try {
+//			service.addEvent(event);
+//			event = service.getEvent(event.getEventId());
+//			return ResponseEntity.status(HttpStatus.CREATED).body(event);
+//		} catch (DaoException e) {
+//			ErrorMessage errorMessage = new ErrorMessage();
+//			errorMessage.setData(e.getMessage());
+//			errorMessage.setMessage("failed to add Event to db");
+//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+//		}
+//	}
+	
+	
+	@PostMapping("/{id}")
+	public ResponseEntity<?> addEvent(@RequestBody List<Event> events, @PathVariable Integer id) {
 
+		List<Event> eventsList=new ArrayList<Event>();
 		try {
-			service.addEvent(event);
-			event = service.getEvent(event.getEventId());
-			return ResponseEntity.status(HttpStatus.CREATED).body(event);
+			for (Event event2 : events) {
+				service.addEvent(event2);
+				eventsList.add(service.getEvent(event2.getEventId()));
+			}
+			return ResponseEntity.status(HttpStatus.CREATED).body(eventsList);
 		} catch (DaoException e) {
 			ErrorMessage errorMessage = new ErrorMessage();
 			errorMessage.setData(e.getMessage());
-			errorMessage.setMessage("failed to add Event to db");
+			errorMessage.setMessage("failed to add event to db");
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
@@ -147,31 +169,52 @@ public class EventController {
 	}
 
 	// Soft Delete Event
-	@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
-	public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {
+//	@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
+//	public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {
+//		Set<String> keys = map.keySet();
+//		Event event = null;
+//		try {
+//			if(keys.contains("soft")) {
+//				event = service.getEvent(id);
+//				service.deleteSoftEvent(id);
+//				event = service.getEvent(id);
+//				
+//			}
+//			if(keys.contains("hard")) {
+//				System.out.println("hhhh");
+//				service.deleteEvent(id);
+//				return ResponseEntity.status(HttpStatus.OK).body(event);
+//			}
+//
+//
+//		} catch (DaoException e) {
+//			ErrorMessage errorMessage = new ErrorMessage();
+//			errorMessage.setData(e.getMessage());
+//			errorMessage.setMessage("failed to delete Event from db");
+//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+//		}
+//		return ResponseEntity.status(HttpStatus.OK).body(event);
+//
+//	}
+	
+	
+	@DeleteMapping
+	public ResponseEntity<List<Event>> DeleteEvent(@RequestBody List<Integer> eventsIds, @RequestParam Map<String, String> map)
+			throws DaoException {
 		Set<String> keys = map.keySet();
-		Event event = null;
-		try {
-			if(keys.contains("soft")) {
-				event = service.getEvent(id);
-				service.deleteEvent(id);
-				event = service.getEvent(id);
-				
+
+		if (keys.contains("soft"))
+			for (Integer evId : eventsIds) {
+				service.deleteSoftEvent(evId);
 			}
-			if(keys.contains("hard")) {
-				service.deleteEvent(id);
-				return ResponseEntity.status(HttpStatus.OK).body(event);
+		if (keys.contains("hard"))
+			for (Integer evId : eventsIds) {
+				service.deleteEvent(evId);
 			}
+			
 
-
-		} catch (DaoException e) {
-			ErrorMessage errorMessage = new ErrorMessage();
-			errorMessage.setData(e.getMessage());
-			errorMessage.setMessage("failed to delete Event from db");
-			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(event);
-
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
+	
 
 }
