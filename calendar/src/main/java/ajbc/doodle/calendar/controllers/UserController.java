@@ -48,7 +48,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * 
  * @author Ayala Maskalchi
  *
- *Restful api service that receives http requests about Users of the calendar.
+ *Restful api service that receives http requests about users of the calendar.
  *
  */
 

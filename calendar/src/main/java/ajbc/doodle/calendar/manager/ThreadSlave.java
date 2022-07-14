@@ -49,8 +49,8 @@ public class ThreadSlave implements Runnable {
 			
 			messagePushService.sendPushMessage(user,
 					messagePushService.encryptMessage(user, new PushMessage("message: ", notification.toString())));
-//			notification.isSend(true);
-//			notificationService.updateNotification(notification);
+			notification.isSend(true);
+			notificationService.updateNotification(notification);
 			
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block

@@ -24,7 +24,13 @@ import ajbc.doodle.calendar.manager.NotificationManager;
 import ajbc.doodle.calendar.services.EventService;
 import ajbc.doodle.calendar.services.MessagePushService;
 import ajbc.doodle.calendar.services.NotificationService;
-
+/**
+ * 
+ * @author Ayala Maskalchi
+ * 
+ * Restful api service that receives http requests about notification of the calendar.
+ *
+ */
 @RequestMapping("/notifications")
 @RestController
 public class NotificationController {
@@ -38,6 +44,11 @@ public class NotificationController {
 	@Autowired(required = false)
 	private NotificationManager notificationManager;
 
+	/**
+	 * 
+	 * @param notification
+	 * @return new notification
+	 */
 	// Create Notification
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> addNotification(@RequestBody Notification notification) {
@@ -75,6 +86,11 @@ public class NotificationController {
 //		}
 //	}
 
+	/**
+	 * 
+	 * @param id
+	 * @return Notification by id
+	 */
 	// Get Notification by id
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getEventById(@PathVariable Integer id) {
@@ -91,7 +107,11 @@ public class NotificationController {
 		}
 	}
 
-
+/**
+ * push controller methods
+ * 
+ * @return
+ */
 	//push controller methods
 	@GetMapping(path = "/publicSigningKey", produces = "application/octet-stream")
 	public byte[] publicSigningKey() {
@@ -103,7 +123,13 @@ public class NotificationController {
 		return messagePushService.getServerKeys().getPublicKeyBase64();
 	}
 
-
+/**
+ * 
+ * @param map:
+ * @param eventId Get notifications by event id 
+ * @return Get all events
+ * @throws DaoException
+ */
 	// Get with param
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
@@ -124,6 +150,12 @@ public class NotificationController {
 		return ResponseEntity.ok(notificationsList);
 	}
 	
+	/**
+	 * 
+	 * @param notification
+	 * @param id
+	 * @return update Notification
+	 */
 	// Update Notification
 		@RequestMapping(method = RequestMethod.PUT, path="/{id}")
 		public ResponseEntity<?> updateProduct(@RequestBody Notification notification, @PathVariable Integer id) {
@@ -143,6 +175,11 @@ public class NotificationController {
 			}
 		}
 		
+		/**
+		 * 
+		 * @param notifications
+		 * @return Update Notification from list notification
+		 */
 		@RequestMapping(method = RequestMethod.PUT)
 		public ResponseEntity<?> updateListNotifications(@RequestBody List<Notification> notifications) {
 			Notification not;
@@ -168,7 +205,14 @@ public class NotificationController {
 		
 		
 		
-		
+		/**
+		 * 
+		 * @param id
+		 * @param map:
+		 * @param soft delete soft notification
+		 * @param hard delete hard notification 
+		 * @return
+		 */
 		// Delete Notification
 		@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
 		public ResponseEntity<?> deleteUser(@PathVariable Integer id, @RequestParam Map<String, String> map) {

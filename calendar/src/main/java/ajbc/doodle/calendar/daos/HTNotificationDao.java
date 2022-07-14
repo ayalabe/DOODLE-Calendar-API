@@ -2,6 +2,7 @@ package ajbc.doodle.calendar.daos;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -57,7 +58,7 @@ public class HTNotificationDao implements NotificationDao {
 		@Override
 		public List<Notification> getAllNotification() throws DaoException {
 			DetachedCriteria criteria = DetachedCriteria.forClass(Notification.class);
-			List<Notification> notifList = (List<Notification>)template.findByCriteria(criteria);
+			List<Notification> notifList = (List<Notification>)template.findByCriteria(criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 			if(notifList==null)
 				throw new DaoException("No Notification found in DB");
 			return notifList;

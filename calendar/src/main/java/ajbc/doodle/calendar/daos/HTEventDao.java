@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -127,7 +128,7 @@ public class HTEventDao implements EventDao {
 		@Override
 		public List<Event> getAllEvent() throws DaoException {
 			DetachedCriteria criteria = DetachedCriteria.forClass(Event.class);
-			List<Event> eventList = (List<Event>)template.findByCriteria(criteria);
+			List<Event> eventList = (List<Event>)template.findByCriteria(criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 			if(eventList==null)
 				throw new DaoException("No event found in DB");
 			return eventList;

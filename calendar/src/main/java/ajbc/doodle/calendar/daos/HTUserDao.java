@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -90,7 +91,7 @@ public class HTUserDao implements UserDao {
 		@Override
 		public List<User> getAllUser() throws DaoException {
 			DetachedCriteria criteria = DetachedCriteria.forClass(User.class);
-			List<User> userList = (List<User>)template.findByCriteria(criteria);
+			List<User> userList = (List<User>)template.findByCriteria(criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 			if(userList==null)
 				throw new DaoException("No users found in DB");
 			return userList;

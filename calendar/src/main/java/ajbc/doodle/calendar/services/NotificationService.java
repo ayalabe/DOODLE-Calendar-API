@@ -40,7 +40,7 @@ public class NotificationService {
 		notificationDao.addNotification(notification);
 	}
 
-	public Notification updateNotification(Notification notification) throws DaoException {
+	public synchronized Notification updateNotification(Notification notification) throws DaoException {
 		notification.setEvent(eventDao.getEvent(notification.getEventId()));
 		notification.setUserId(notification.getUserId());
 		notificationDao.updateNotification(notification);

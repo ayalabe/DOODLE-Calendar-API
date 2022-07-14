@@ -25,6 +25,14 @@ import ajbc.doodle.calendar.entities.User;
 import ajbc.doodle.calendar.services.EventService;
 import ajbc.doodle.calendar.services.UserService;
 
+
+/**
+ * 
+ * @author Ayala Maskalchi
+ * 
+ * Restful api service that receives http requests about Event of the calendar.
+ *
+ */
 @RequestMapping("/events")
 @RestController
 public class EventController {
@@ -34,6 +42,12 @@ public class EventController {
 	@Autowired
 	UserService userService;
 
+	
+	/**
+	 * 
+	 * @param event
+	 * @return new event with new list notification 
+	 */
 	// Create Event
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> addEvent(@RequestBody Event event) {
@@ -69,6 +83,11 @@ public class EventController {
 //		}
 //	}
 
+	/**
+	 * 
+	 * @param id
+	 * @return get event by id
+	 */
 	// Get event by id
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getEventById(@PathVariable Integer id) {
@@ -85,7 +104,17 @@ public class EventController {
 		}
 	}
 
-
+/**
+ * 
+ * @param map - get event by param:
+ * @param userId, @param upcoming upcoming events of a user
+ * @param userId, @param num, @param hours  Get events of a user the next coming num of minutes and hours
+ * @param userId, @param start, @param end Get events of a user in a range between start date and time to end date and time
+ * @param start, @param end Get all events in a range between start date and time to end date and time.
+ * @param userId Get all events of a user
+ * @return
+ * @throws DaoException
+ */
 	// Get with param
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getUserssIds(@RequestParam Map<String, String> map) throws DaoException {
@@ -151,6 +180,12 @@ public class EventController {
 		return ResponseEntity.ok(list);
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @param id
+	 * @return Update Event by event
+	 */
 	// Update Event
 	@RequestMapping(method = RequestMethod.PUT, path="/{id}")
 	public ResponseEntity<?> updateProduct(@RequestBody Event event, @PathVariable Integer id) {
@@ -197,7 +232,13 @@ public class EventController {
 //
 //	}
 	
-	
+	/**
+	 * 
+	 * @param eventsIds
+	 * @param map
+	 * @return ok if delete list is success
+	 * @throws DaoException
+	 */
 	@DeleteMapping
 	public ResponseEntity<List<Event>> DeleteEvent(@RequestBody List<Integer> eventsIds, @RequestParam Map<String, String> map)
 			throws DaoException {
