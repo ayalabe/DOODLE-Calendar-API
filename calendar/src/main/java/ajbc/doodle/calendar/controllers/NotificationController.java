@@ -8,10 +8,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,41 +39,41 @@ public class NotificationController {
 	private NotificationManager notificationManager;
 
 	// Create Notification
-//	@RequestMapping(method = RequestMethod.POST)
-//	public ResponseEntity<?> addNotification(@RequestBody Notification notification) {
-//
-//		try {
-//			notificationServcie.addNotification(notification);
-//			notification = notificationServcie.getNotification(notification.getNotificationId());
-//			return ResponseEntity.status(HttpStatus.CREATED).body(notification);
-//		} catch (DaoException e) {
-//			ErrorMessage errorMessage = new ErrorMessage();
-//			errorMessage.setData(e.getMessage());
-//			errorMessage.setMessage("failed to add Notification to db");
-//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
-//		}
-//	}
-	// Create Notification from list
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> addNotification(@RequestBody List<Notification> notifications) {
+	public ResponseEntity<?> addNotification(@RequestBody Notification notification) {
+
 		try {
-			List<Notification> addedNotifications = new ArrayList<Notification>();
-
-			for (int i = 0; i < notifications.size(); i++) {
-				notificationServcie.addNotification(notifications.get(i));
-
-				Notification notification = notificationServcie.getNotification(notifications.get(i).getNotificationId());
-				addedNotifications.add(notification);
-			}
-
-			return ResponseEntity.status(HttpStatus.CREATED).body(addedNotifications);
+			notificationServcie.addNotification(notification);
+			notification = notificationServcie.getNotification(notification.getNotificationId());
+			return ResponseEntity.status(HttpStatus.CREATED).body(notification);
 		} catch (DaoException e) {
 			ErrorMessage errorMessage = new ErrorMessage();
 			errorMessage.setData(e.getMessage());
-			errorMessage.setMessage("failed to add notification to db");
+			errorMessage.setMessage("failed to add Notification to db");
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
+	// Create Notification from list
+//	@RequestMapping(method = RequestMethod.POST)
+//	public ResponseEntity<?> addNotification(@RequestBody List<Notification> notifications) {
+//		try {
+//			List<Notification> addedNotifications = new ArrayList<Notification>();
+//
+//			for (int i = 0; i < notifications.size(); i++) {
+//				notificationServcie.addNotification(notifications.get(i));
+//
+//				Notification notification = notificationServcie.getNotification(notifications.get(i).getNotificationId());
+//				addedNotifications.add(notification);
+//			}
+//
+//			return ResponseEntity.status(HttpStatus.CREATED).body(addedNotifications);
+//		} catch (DaoException e) {
+//			ErrorMessage errorMessage = new ErrorMessage();
+//			errorMessage.setData(e.getMessage());
+//			errorMessage.setMessage("failed to add notification to db");
+//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+//		}
+//	}
 
 	// Get Notification by id
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")

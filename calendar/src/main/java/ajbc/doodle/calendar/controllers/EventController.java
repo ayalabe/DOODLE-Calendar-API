@@ -35,39 +35,39 @@ public class EventController {
 	UserService userService;
 
 	// Create Event
-//	@RequestMapping(method = RequestMethod.POST)
-//	public ResponseEntity<?> addEvent(@RequestBody Event event) {
-//
-//		try {
-//			service.addEvent(event);
-//			event = service.getEvent(event.getEventId());
-//			return ResponseEntity.status(HttpStatus.CREATED).body(event);
-//		} catch (DaoException e) {
-//			ErrorMessage errorMessage = new ErrorMessage();
-//			errorMessage.setData(e.getMessage());
-//			errorMessage.setMessage("failed to add Event to db");
-//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
-//		}
-//	}
-	
-	
-	@PostMapping("/{id}")
-	public ResponseEntity<?> addEvent(@RequestBody List<Event> events, @PathVariable Integer id) {
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<?> addEvent(@RequestBody Event event) {
 
-		List<Event> eventsList=new ArrayList<Event>();
 		try {
-			for (Event event2 : events) {
-				service.addEvent(event2);
-				eventsList.add(service.getEvent(event2.getEventId()));
-			}
-			return ResponseEntity.status(HttpStatus.CREATED).body(eventsList);
+			service.addEvent(event);
+			event = service.getEvent(event.getEventId());
+			return ResponseEntity.status(HttpStatus.CREATED).body(event);
 		} catch (DaoException e) {
 			ErrorMessage errorMessage = new ErrorMessage();
 			errorMessage.setData(e.getMessage());
-			errorMessage.setMessage("failed to add event to db");
+			errorMessage.setMessage("failed to add Event to db");
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
+	
+	
+//	@PostMapping("/{id}")
+//	public ResponseEntity<?> addEvent(@RequestBody List<Event> events, @PathVariable Integer id) {
+//
+//		List<Event> eventsList=new ArrayList<Event>();
+//		try {
+//			for (Event event2 : events) {
+//				service.addEvent(event2);
+//				eventsList.add(service.getEvent(event2.getEventId()));
+//			}
+//			return ResponseEntity.status(HttpStatus.CREATED).body(eventsList);
+//		} catch (DaoException e) {
+//			ErrorMessage errorMessage = new ErrorMessage();
+//			errorMessage.setData(e.getMessage());
+//			errorMessage.setMessage("failed to add event to db");
+//			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
+//		}
+//	}
 
 	// Get event by id
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")

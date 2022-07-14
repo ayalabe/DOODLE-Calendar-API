@@ -44,7 +44,13 @@ import javax.crypto.NoSuchPaddingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
+/**
+ * 
+ * @author Ayala Maskalchi
+ *
+ *Restful api service that receives http requests about Users of the calendar.
+ *
+ */
 
 @RequestMapping("/users")
 @RestController
@@ -56,6 +62,12 @@ public class UserController {
 	EventService eventService;
 	@Autowired
 	MessagePushService messagePushService;
+	
+	/**
+	 * 
+	 * @param user 
+	 * @return create new user
+	 */
 
 	// Create users
 	@RequestMapping(method = RequestMethod.POST)
@@ -73,6 +85,21 @@ public class UserController {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param subscription 
+	 * @param email
+	 * @return
+	 * @throws DaoException
+	 * @throws InvalidKeyException
+	 * @throws JsonProcessingException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws InvalidAlgorithmParameterException
+	 * @throws NoSuchPaddingException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	// login
 		@RequestMapping(method = RequestMethod.POST, path = "/login/{email}")
 		public ResponseEntity<?> login(@RequestBody Subscription subscription, @PathVariable(required = false) String email)

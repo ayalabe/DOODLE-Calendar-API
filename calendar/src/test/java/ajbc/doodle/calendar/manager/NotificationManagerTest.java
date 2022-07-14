@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import ajbc.doodle.calendar.entities.Notification;
-import ajbc.doodle.calendar.manager.NotificationManager;
 
 @TestInstance(Lifecycle.PER_METHOD)
 class NotificationManagerTest {
@@ -28,13 +27,10 @@ class NotificationManagerTest {
 
 		notification.setLocalDateTime(now);
 
-		// manager.userService is null because it is @Autowired
-		// so, executorService in run method throws NullPointerException.
 		manager.addQueue(notification);
 
 		assertEquals(now, manager.getDateTime());
-		// we go to sleep, because there is another thread who needs to dequeue this notification from the queue, 
-		// and sometimes we arrive to this line before the thread ran.
+
 		Thread.sleep(500);
 		assertTrue(manager.getNotificationsQueue().isEmpty());
 
